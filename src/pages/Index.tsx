@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Users, GraduationCap, Building2, Target, Eye, Heart, MapPin, Phone, Mail, ChevronDown } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useEffect, useState } from "react";
 
 const Index = () => {
   const campuses = [
@@ -18,8 +19,18 @@ const Index = () => {
   ];
 
   const mitraLogos = [
-    "ITB", "UNPAD", "UNISBA", "UNPAS", "ITENAS", "UNIKOM", "POLBAN", "UPI"
+    "ITB", "UNPAD", "UNISBA", "UNPAS", "ITENAS", "UNIKOM", "POLBAN"
   ];
+
+  const [currentLogoIndex, setCurrentLogoIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentLogoIndex((prevIndex) => (prevIndex + 1) % mitraLogos.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [mitraLogos.length]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -36,22 +47,34 @@ const Index = () => {
                 <p className="text-sm text-gray-600">Jawa Barat</p>
               </div>
             </div>
-            <nav className="hidden md:flex space-x-6">
-              <a href="#home" className="text-gray-700 hover:text-blue-600 transition-colors">Beranda</a>
-              <div className="relative group">
-                <a href="#tentang" className="text-gray-700 hover:text-blue-600 transition-colors flex items-center">
-                  Tentang Kami <ChevronDown className="ml-1 h-4 w-4" />
-                </a>
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  <a href="#organisasi" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Organisasi</a>
-                  <a href="#ad-art" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">AD/ART</a>
-                  <a href="#kepengurusan" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Kepengurusan</a>
+            <nav className="flex-1 flex justify-center">
+              <div className="flex space-x-6">
+                <a href="#home" className="text-gray-700 hover:text-blue-600 transition-colors">Beranda</a>
+                <div className="relative group">
+                  <a href="#tentang" className="text-gray-700 hover:text-blue-600 transition-colors flex items-center">
+                    Tentang Kami <ChevronDown className="ml-1 h-4 w-4" />
+                  </a>
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <a href="#organisasi" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Organisasi</a>
+                    <a href="#ad-art" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">AD/ART</a>
+                    <a href="#kepengurusan" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Kepengurusan</a>
+                  </div>
                 </div>
+                <a href="#program" className="text-gray-700 hover:text-blue-600 transition-colors">Program</a>
+                <a href="#artikel" className="text-gray-700 hover:text-blue-600 transition-colors">Artikel</a>
+                <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
               </div>
-              <a href="#program" className="text-gray-700 hover:text-blue-600 transition-colors">Program</a>
-              <a href="#artikel" className="text-gray-700 hover:text-blue-600 transition-colors">Artikel</a>
-              <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
             </nav>
+            <div className="flex space-x-4">
+              <Button variant="outline" className="border-gray-600 text-gray-700 hover:bg-gray-100">
+                <span className="mr-2">🛒</span>
+                Cart
+              </Button>
+              <Button className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600">
+                <span className="mr-2">👤</span>
+                Sign In
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -79,35 +102,67 @@ const Index = () => {
       <section className="py-16 px-4 bg-white/50">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Logo Mitra Kampus Kami</h2>
-          <Carousel className="w-full max-w-4xl mx-auto">
-            <CarouselContent>
-              {mitraLogos.map((logo, index) => (
-                <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/4">
-                  <div className="p-4">
-                    <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-green-50">
-                      <CardContent className="flex aspect-square items-center justify-center p-6">
-                        <div className="text-2xl font-bold text-blue-600">{logo}</div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
+          <div className="w-full max-w-6xl mx-auto overflow-hidden">
+            <div 
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${currentLogoIndex * (100 / 7)}%)` }}
+            >
+              {mitraLogos.concat(mitraLogos).map((logo, index) => (
+                <div key={index} className="w-1/7 flex-shrink-0 px-4">
+                  <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-green-50">
+                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                      <div className="text-2xl font-bold text-blue-600">{logo}</div>
+                    </CardContent>
+                  </Card>
+                </div>
               ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Visi Misi */}
-      <section id="visi-misi" className="py-20 px-4">
+      {/* Data Kuantitatif */}
+      <section id="statistik" className="py-16 px-4">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">Data Organisasi</h2>
+            <p className="text-xl text-gray-600">Jejak langkah GEKRAFS dalam angka</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+              <CardContent className="p-6">
+                <MapPin className="h-12 w-12 mx-auto mb-4 opacity-90" />
+                <div className="text-3xl font-bold mb-2">27</div>
+                <div className="text-blue-100">Kabupaten & Kota</div>
+              </CardContent>
+            </Card>
+            <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-green-500 to-green-600 text-white">
+              <CardContent className="p-6">
+                <Building2 className="h-12 w-12 mx-auto mb-4 opacity-90" />
+                <div className="text-3xl font-bold mb-2">35</div>
+                <div className="text-green-100">Kampus Mitra</div>
+              </CardContent>
+            </Card>
+            <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+              <CardContent className="p-6">
+                <Users className="h-12 w-12 mx-auto mb-4 opacity-90" />
+                <div className="text-3xl font-bold mb-2">40</div>
+                <div className="text-purple-100">Anggota Aktif</div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Visi Misi dengan Foto Pengurus */}
+      <section id="visi-misi" className="py-20 px-4 bg-white/50">
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">Visi & Misi</h2>
             <p className="text-xl text-gray-600">Fondasi yang menguatkan langkah kami menuju masa depan</p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             <Card className="shadow-xl border-0 bg-gradient-to-br from-blue-50 to-white">
               <CardHeader className="text-center pb-6">
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
@@ -152,37 +207,39 @@ const Index = () => {
                 </ul>
               </CardContent>
             </Card>
-          </div>
-        </div>
-      </section>
 
-      {/* Data Kuantitatif */}
-      <section id="statistik" className="py-16 px-4 bg-white/50">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Data Organisasi</h2>
-            <p className="text-xl text-gray-600">Jejak langkah GEKRAFS dalam angka</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-              <CardContent className="p-6">
-                <MapPin className="h-12 w-12 mx-auto mb-4 opacity-90" />
-                <div className="text-3xl font-bold mb-2">27</div>
-                <div className="text-blue-100">Kabupaten & Kota</div>
-              </CardContent>
-            </Card>
-            <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-green-500 to-green-600 text-white">
-              <CardContent className="p-6">
-                <Building2 className="h-12 w-12 mx-auto mb-4 opacity-90" />
-                <div className="text-3xl font-bold mb-2">35</div>
-                <div className="text-green-100">Kampus Mitra</div>
-              </CardContent>
-            </Card>
-            <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-              <CardContent className="p-6">
-                <Users className="h-12 w-12 mx-auto mb-4 opacity-90" />
-                <div className="text-3xl font-bold mb-2">40</div>
-                <div className="text-purple-100">Anggota Aktif</div>
+            {/* Foto Pengurus */}
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-purple-50 to-white">
+              <CardHeader className="text-center pb-6">
+                <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl text-purple-800">Pengurus</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full mx-auto mb-2 flex items-center justify-center">
+                      <GraduationCap className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="font-semibold text-purple-800">Ahmad Rizki</h4>
+                    <p className="text-sm text-gray-600">Ketua GEKRAFS Jabar</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mx-auto mb-2 flex items-center justify-center">
+                      <Users className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="font-semibold text-blue-800">Siti Nurhaliza</h4>
+                    <p className="text-sm text-gray-600">Wakil Ketua</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto mb-2 flex items-center justify-center">
+                      <Building2 className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="font-semibold text-green-800">Budi Santoso</h4>
+                    <p className="text-sm text-gray-600">Sekretaris Jenderal</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -239,88 +296,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-12 px-4">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 items-center">
-            {/* Logo di Kiri */}
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-gradient-to-r from-blue-500 to-green-500 p-2 rounded-lg">
-                  <GraduationCap className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold">GEKRAFS Jawa Barat</h3>
-                  <p className="text-gray-300 text-sm">Gerakan Mahasiswa Kreatif</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Navigasi di Tengah */}
-            <div className="text-center">
-              <nav className="flex flex-wrap justify-center gap-6">
-                <a href="#home" className="text-gray-300 hover:text-white transition-colors">Beranda</a>
-                <a href="#tentang" className="text-gray-300 hover:text-white transition-colors">Tentang Kami</a>
-                <a href="#program" className="text-gray-300 hover:text-white transition-colors">Program</a>
-                <a href="#artikel" className="text-gray-300 hover:text-white transition-colors">Artikel</a>
-                <a href="#contact" className="text-gray-300 hover:text-white transition-colors">Contact</a>
-              </nav>
-            </div>
-
-            {/* Tombol Cart dan Sign In di Kanan */}
-            <div className="flex justify-end space-x-4">
-              <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white">
-                <span className="mr-2">🛒</span>
-                Cart
-              </Button>
-              <Button className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600">
-                <span className="mr-2">👤</span>
-                Sign In
-              </Button>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-700 mt-8 pt-8">
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h4 className="text-lg font-semibold mb-4">Kontak</h4>
-                <div className="space-y-3">
-                  <div className="flex items-center">
-                    <Mail className="h-5 w-5 mr-3 text-blue-400" />
-                    <span className="text-gray-300">info@gekrafs-jabar.org</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Phone className="h-5 w-5 mr-3 text-green-400" />
-                    <span className="text-gray-300">+62 812 3456 7890</span>
-                  </div>
-                  <div className="flex items-center">
-                    <MapPin className="h-5 w-5 mr-3 text-red-400" />
-                    <span className="text-gray-300">Bandung, Jawa Barat</span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-lg font-semibold mb-4">Program Unggulan</h4>
-                <ul className="space-y-2 text-gray-300">
-                  <li>• Leadership Development</li>
-                  <li>• Innovation Challenge</li>
-                  <li>• Social Impact Projects</li>
-                  <li>• Inter-Campus Collaboration</li>
-                  <li>• Skill Enhancement Workshop</li>
-                </ul>
-              </div>
-            </div>
-            
-            <div className="text-center mt-8 pt-8 border-t border-gray-700">
-              <p className="text-gray-400">
-                © 2024 GEKRAFS Jawa Barat. Semua hak cipta dilindungi.
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
