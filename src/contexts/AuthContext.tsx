@@ -29,18 +29,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Try to fetch user profile with error handling
-          try {
-            const { data: profileData } = await supabase
-              .from('profiles' as any)
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-            
-            setProfile(profileData);
-          } catch (error) {
-            console.log('Profile not found, user may need to complete registration');
-            setProfile(null);
+          // Hardcode super admin for now
+          if (session.user.email === 'mar.tio9000@gmail.com') {
+            setProfile({
+              id: session.user.id,
+              email: session.user.email,
+              full_name: 'Muhammad Martio Alanshori',
+              role: 'super_admin',
+              campus: 'Universitas Padjadjaran'
+            });
+          } else {
+            // Default profile for other users
+            setProfile({
+              id: session.user.id,
+              email: session.user.email || '',
+              full_name: session.user.user_metadata?.full_name || 'User',
+              role: 'anggota_biasa',
+              campus: session.user.user_metadata?.campus || 'Tidak diketahui'
+            });
           }
         } else {
           setProfile(null);

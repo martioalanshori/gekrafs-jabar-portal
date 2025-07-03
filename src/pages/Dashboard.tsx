@@ -1,74 +1,66 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, BookOpen, ShoppingBag, FileText, Plus, Edit, Trash2 } from "lucide-react";
+import { Users, BookOpen, ShoppingBag, FileText, Plus, Edit, Trash2, Calendar, MessageSquare } from "lucide-react";
 import { Link, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Article, Product } from "@/types/database";
 
 const Dashboard = () => {
   const { user, profile, loading } = useAuth();
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
   const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalArticles: 0,
-    totalProducts: 0,
-    totalOrders: 0
+    totalUsers: 127,
+    totalArticles: 45,
+    totalProducts: 32,
+    totalOrders: 89,
+    activeAccounts: 98,
+    bookingMeetings: 23
   });
 
-  useEffect(() => {
-    if (user && profile) {
-      fetchDashboardData();
+  // Dummy data untuk artikel
+  const dummyArticles = [
+    {
+      id: 1,
+      title: "Inovasi Mahasiswa GEKRAFS dalam Bidang Teknologi",
+      excerpt: "Mahasiswa GEKRAFS menciptakan aplikasi inovatif...",
+      published: true,
+      category: "Teknologi",
+      created_at: "2024-01-15"
+    },
+    {
+      id: 2,
+      title: "Workshop Kewirausahaan di Kampus",
+      excerpt: "Event workshop yang berhasil menarik 200+ mahasiswa...",
+      published: false,
+      category: "Kewirausahaan",
+      created_at: "2024-01-14"
     }
-  }, [user, profile]);
+  ];
 
-  const fetchDashboardData = async () => {
-    try {
-      // Fetch articles if user can manage them
-      if (profile?.role === 'admin_artikel' || profile?.role === 'super_admin') {
-        const { data: articlesData } = await supabase
-          .from('articles' as any)
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5);
-        
-        if (articlesData) setArticles(articlesData);
-
-        const { data: productsData } = await supabase
-          .from('products' as any)
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5);
-        
-        if (productsData) setProducts(productsData);
-
-        // Fetch stats for super admin
-        if (profile?.role === 'super_admin') {
-          const [usersResult, articlesResult, productsResult, ordersResult] = await Promise.all([
-            supabase.from('profiles' as any).select('id', { count: 'exact' }),
-            supabase.from('articles' as any).select('id', { count: 'exact' }),
-            supabase.from('products' as any).select('id', { count: 'exact' }),
-            supabase.from('orders' as any).select('id', { count: 'exact' })
-          ]);
-
-          setStats({
-            totalUsers: usersResult.count || 0,
-            totalArticles: articlesResult.count || 0,
-            totalProducts: productsResult.count || 0,
-            totalOrders: ordersResult.count || 0
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+  // Dummy data untuk produk
+  const dummyProducts = [
+    {
+      id: 1,
+      name: "Kaos GEKRAFS Official",
+      description: "Kaos resmi organisasi GEKRAFS dengan desain eksklusif",
+      price: 75000,
+      stock: 50,
+      active: true,
+      category: "Fashion"
+    },
+    {
+      id: 2,
+      name: "Tote Bag Eksklusif",
+      description: "Tas ramah lingkungan untuk kegiatan sehari-hari",
+      price: 45000,
+      stock: 25,
+      active: true,
+      category: "Aksesoris"
     }
-  };
+  ];
 
   if (loading) {
     return (
@@ -108,7 +100,7 @@ const Dashboard = () => {
 
           {/* Stats Cards for Super Admin */}
           {isSuperAdmin && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -116,6 +108,16 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{stats.totalUsers}</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Akun Aktif</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.activeAccounts}</div>
                 </CardContent>
               </Card>
 
@@ -148,7 +150,46 @@ const Dashboard = () => {
                   <div className="text-2xl font-bold">{stats.totalOrders}</div>
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Booking Meeting</CardTitle>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.bookingMeetings}</div>
+                </CardContent>
+              </Card>
             </div>
+          )}
+
+          {/* Navigation Menu for Super Admin */}
+          {isSuperAdmin && (
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle>Menu Admin</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Button variant="outline" className="h-20 flex flex-col items-center space-y-2">
+                    <Users className="h-6 w-6" />
+                    <span>Akun</span>
+                  </Button>
+                  <Button variant="outline" className="h-20 flex flex-col items-center space-y-2">
+                    <BookOpen className="h-6 w-6" />
+                    <span>Artikel</span>
+                  </Button>
+                  <Button variant="outline" className="h-20 flex flex-col items-center space-y-2">
+                    <Calendar className="h-6 w-6" />
+                    <span>Booking Meeting</span>
+                  </Button>
+                  <Button variant="outline" className="h-20 flex flex-col items-center space-y-2">
+                    <ShoppingBag className="h-6 w-6" />
+                    <span>Ecommerce</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Articles Management */}
@@ -165,10 +206,10 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {articles.length === 0 ? (
+                  {dummyArticles.length === 0 ? (
                     <p className="text-gray-500 text-center py-4">Belum ada artikel</p>
                   ) : (
-                    articles.map((article) => (
+                    dummyArticles.map((article) => (
                       <div key={article.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex-1">
                           <h3 className="font-medium">{article.title}</h3>
@@ -210,10 +251,10 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {products.length === 0 ? (
+                  {dummyProducts.length === 0 ? (
                     <p className="text-gray-500 text-center py-4">Belum ada produk</p>
                   ) : (
-                    products.map((product) => (
+                    dummyProducts.map((product) => (
                       <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex-1">
                           <h3 className="font-medium">{product.name}</h3>
@@ -273,7 +314,7 @@ const Dashboard = () => {
                 )}
                 <Link to="/contact">
                   <Button variant="outline" className="w-full">
-                    <FileText className="h-4 w-4 mr-2" />
+                    <MessageSquare className="h-4 w-4 mr-2" />
                     Kontak
                   </Button>
                 </Link>

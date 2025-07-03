@@ -55,55 +55,55 @@ const CampusSlider = () => {
         </div>
 
         <div className="relative">
-          {/* Logo Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
-            {getSlideLogos().map((campus, index) => (
-              <div key={index} className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:shadow-md transition-shadow">
-                <div className="w-16 h-16 mb-3 bg-white rounded-full flex items-center justify-center shadow-sm">
-                  <img
-                    src={campus.logo}
-                    alt={campus.name}
-                    className="w-12 h-12 object-contain rounded-full"
-                  />
-                </div>
-                <h3 className="text-sm font-medium text-gray-800 text-center leading-tight">
-                  {campus.name}
-                </h3>
-              </div>
-            ))}
-          </div>
-
-          {/* Navigation */}
-          <div className="flex justify-center items-center space-x-4">
+          {/* Logo Grid with Navigation */}
+          <div className="flex items-center justify-between">
+            {/* Left Navigation */}
             <Button
               variant="outline"
               size="sm"
               onClick={prevSlide}
-              className="p-2"
+              className="p-2 absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            <div className="flex space-x-2">
-              {Array.from({ length: totalSlides }).map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-colors ${
-                    currentSlide === index ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                />
+            {/* Logo Container */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mx-12 w-full">
+              {getSlideLogos().map((campus, index) => (
+                <div key={index} className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:shadow-md transition-shadow">
+                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm">
+                    <img
+                      src={campus.logo}
+                      alt={campus.name}
+                      className="w-12 h-12 object-contain rounded-full"
+                    />
+                  </div>
+                </div>
               ))}
             </div>
 
+            {/* Right Navigation */}
             <Button
               variant="outline"
               size="sm"
               onClick={nextSlide}
-              className="p-2"
+              className="p-2 absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
+          </div>
+
+          {/* Dots Indicator */}
+          <div className="flex justify-center mt-6 space-x-2">
+            {Array.from({ length: totalSlides }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  currentSlide === index ? 'bg-blue-600' : 'bg-gray-300'
+                }`}
+              />
+            ))}
           </div>
         </div>
       </div>

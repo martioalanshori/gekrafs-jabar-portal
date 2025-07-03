@@ -44,7 +44,7 @@ const Header = () => {
               <DropdownMenuTrigger className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
                 Tentang Kami
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="bg-white">
                 <DropdownMenuItem asChild>
                   <Link to="/organisasi">Organisasi</Link>
                 </DropdownMenuItem>
@@ -53,6 +53,9 @@ const Header = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/kepengurusan">Kepengurusan</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/dewan-pembina">Dewan Pembina</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -87,7 +90,7 @@ const Header = () => {
                       <span className="hidden sm:block">{profile?.full_name || user.email}</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent>
+                  <DropdownMenuContent className="bg-white">
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard">Dashboard</Link>
                     </DropdownMenuItem>
@@ -150,6 +153,13 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Kepengurusan
+              </Link>
+              <Link
+                to="/dewan-pembina"
+                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dewan Pembina
               </Link>
               <Link
                 to="/program"

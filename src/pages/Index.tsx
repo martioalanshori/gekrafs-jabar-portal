@@ -184,26 +184,55 @@ const Index = () => {
       {/* Organization Stats */}
       <OrganizationStats />
 
-      {/* Pembina Message Section */}
+      {/* Pembina Message Section - Updated with two pembina */}
       <section className="py-16 bg-gradient-to-br from-blue-50 to-green-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">
-              Sambutan dari Pembina Organisasi
+              Sambutan dari Dewan Pembina
             </h2>
-            <Card className="max-w-4xl mx-auto shadow-xl border-0 bg-white">
-              <CardContent className="p-8">
-                <p className="text-lg text-gray-700 leading-relaxed mb-6 italic">
-                  "GEKRAFS Jawa Barat adalah manifestasi dari semangat anak muda yang ingin berkontribusi 
-                  nyata bagi bangsa. Melalui ekonomi kreatif, kita tidak hanya menciptakan peluang ekonomi, 
-                  tetapi juga membangun karakter generasi yang inovatif dan berjiwa entrepreneur."
-                </p>
-                <div className="text-center">
-                  <h4 className="font-bold text-xl text-gray-800">Dr. Ahmad Fauzi, M.Si</h4>
-                  <p className="text-gray-600">Pembina GEKRAFS Jawa Barat</p>
-                </div>
-              </CardContent>
-            </Card>
+            
+            <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+              {/* Pembina 1 */}
+              <Card className="shadow-xl border-0 bg-white">
+                <CardContent className="p-8">
+                  <div className="flex flex-col items-center mb-6">
+                    <img
+                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
+                      alt="Dr. Ahmad Fauzi"
+                      className="w-24 h-24 rounded-full object-cover mb-4"
+                    />
+                    <h4 className="font-bold text-xl text-gray-800">Dr. Ahmad Fauzi, M.Si</h4>
+                    <p className="text-gray-600">Ketua Dewan Pembina</p>
+                  </div>
+                  <p className="text-lg text-gray-700 leading-relaxed italic">
+                    "GEKRAFS Jawa Barat adalah manifestasi dari semangat anak muda yang ingin berkontribusi 
+                    nyata bagi bangsa. Melalui ekonomi kreatif, kita tidak hanya menciptakan peluang ekonomi, 
+                    tetapi juga membangun karakter generasi yang inovatif dan berjiwa entrepreneur."
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Pembina 2 */}
+              <Card className="shadow-xl border-0 bg-white">
+                <CardContent className="p-8">
+                  <div className="flex flex-col items-center mb-6">
+                    <img
+                      src="https://images.unsplash.com/photo-1494790108755-2616c69e6e6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
+                      alt="Prof. Dr. Siti Nurhaliza"
+                      className="w-24 h-24 rounded-full object-cover mb-4"
+                    />
+                    <h4 className="font-bold text-xl text-gray-800">Prof. Dr. Siti Nurhaliza, M.Pd</h4>
+                    <p className="text-gray-600">Anggota Dewan Pembina</p>
+                  </div>
+                  <p className="text-lg text-gray-700 leading-relaxed italic">
+                    "Pendidikan karakter dan pengembangan soft skills menjadi kunci kesuksesan GEKRAFS. 
+                    Kami berkomitmen mendampingi mahasiswa untuk menjadi pemimpin masa depan yang berintegritas 
+                    dan peduli terhadap kemajuan bangsa."
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
