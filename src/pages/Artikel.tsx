@@ -7,94 +7,51 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Article } from "@/types/database";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Article {
+  id: string;
+  title: string;
+  excerpt?: string;
+  content: string;
+  image_url?: string;
+  author_id?: string;
+  category?: string;
+  published: boolean;
+  views?: number;
+  created_at?: string;
+  updated_at?: string;
+}
 
 const Artikel = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-
-  // Data dummy artikel
-  const dummyArticles: Article[] = [
-    {
-      id: "1",
-      title: "Inovasi Mahasiswa GEKRAFS dalam Bidang Teknologi",
-      excerpt: "Mahasiswa GEKRAFS menciptakan aplikasi inovatif untuk membantu UMKM lokal dalam digitalisasi bisnis mereka dengan menggunakan teknologi terkini...",
-      content: "Content lengkap artikel...",
-      image_url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      author_id: "1",
-      category: "Teknologi",
-      published: true,
-      views: 125,
-      created_at: "2024-01-15T10:00:00Z"
-    },
-    {
-      id: "2",
-      title: "Workshop Kewirausahaan: Membangun Startup dari Kampus",
-      excerpt: "Event workshop kewirausahaan yang diselenggarakan GEKRAFS berhasil menarik lebih dari 200 mahasiswa dari berbagai kampus di Jawa Barat...",
-      content: "Content lengkap artikel...",
-      image_url: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      author_id: "1",
-      category: "Kewirausahaan",
-      published: true,
-      views: 89,
-      created_at: "2024-01-12T14:30:00Z"
-    },
-    {
-      id: "3",
-      title: "Festival Ekonomi Kreatif Jawa Barat 2024",
-      excerpt: "GEKRAFS Jawa Barat menyelenggarakan festival ekonomi kreatif tahunan yang menampilkan karya-karya inovatif mahasiswa dari seluruh provinsi...",
-      content: "Content lengkap artikel...",
-      image_url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      author_id: "1",
-      category: "Event",
-      published: true,
-      views: 234,
-      created_at: "2024-01-10T09:15:00Z"
-    },
-    {
-      id: "4",
-      title: "Program Beasiswa GEKRAFS untuk Mahasiswa Berprestasi",
-      excerpt: "GEKRAFS membuka program beasiswa untuk mahasiswa berprestasi dengan latar belakang ekonomi kurang mampu sebagai bentuk komitmen dalam pendidikan...",
-      content: "Content lengkap artikel...",
-      image_url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      author_id: "1",
-      category: "Beasiswa", 
-      published: true,
-      views: 156,
-      created_at: "2024-01-08T11:45:00Z"
-    },
-    {
-      id: "5",
-      title: "Kolaborasi GEKRAFS dengan Pemerintah Daerah",
-      excerpt: "Kerjasama strategis GEKRAFS dengan Pemerintah Provinsi Jawa Barat dalam pengembangan ekonomi kreatif dan pemberdayaan mahasiswa...",
-      content: "Content lengkap artikel...",
-      image_url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      author_id: "1",
-      category: "Kerjasama",
-      published: true,
-      views: 78,
-      created_at: "2024-01-05T16:20:00Z"
-    },
-    {
-      id: "6",
-      title: "Pelatihan Leadership untuk Pengurus GEKRAFS",
-      excerpt: "Program pelatihan kepemimpinan intensif untuk meningkatkan kapasitas pengurus GEKRAFS di seluruh Jawa Barat dalam mengelola organisasi...",
-      content: "Content lengkap artikel...",
-      image_url: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      author_id: "1",
-      category: "Leadership",
-      published: true,
-      views: 102,
-      created_at: "2024-01-03T13:10:00Z"
-    }
-  ];
+  const [loading, setLoading] = useState(true);
 
   const categories = ["All", "Teknologi", "Kewirausahaan", "Event", "Beasiswa", "Kerjasama", "Leadership"];
 
+  const fetchArticles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setArticles(data || []);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      // Fallback to dummy data if there's an error
+      setArticles([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Simulate API call with dummy data
-    setArticles(dummyArticles);
+    fetchArticles();
   }, []);
 
   const filteredArticles = articles.filter(article => {
@@ -104,6 +61,21 @@ const Artikel = () => {
     
     return matchesSearch && matchesCategory && article.published;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+        <Header />
+        <div className="pt-16 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading artikel...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -152,11 +124,13 @@ const Artikel = () => {
               <Card key={article.id} className="shadow-lg hover:shadow-xl transition-shadow border-0 bg-white overflow-hidden">
                 <div className="relative">
                   <img 
-                    src={article.image_url} 
+                    src={article.image_url || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
                     alt={article.title}
                     className="w-full h-48 object-cover"
                   />
-                  <Badge className="absolute top-3 left-3">{article.category}</Badge>
+                  {article.category && (
+                    <Badge className="absolute top-3 left-3">{article.category}</Badge>
+                  )}
                 </div>
                 <CardHeader>
                   <CardTitle className="text-lg line-clamp-2">{article.title}</CardTitle>
@@ -164,8 +138,8 @@ const Artikel = () => {
                 <CardContent>
                   <p className="text-gray-600 text-sm line-clamp-3 mb-4">{article.excerpt}</p>
                   <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-                    <span>{new Date(article.created_at || '').toLocaleDateString('id-ID')}</span>
-                    <span>{article.views} views</span>
+                    <span>{article.created_at ? new Date(article.created_at).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</span>
+                    <span>{article.views || 0} views</span>
                   </div>
                   <Button className="w-full">
                     Baca Selengkapnya

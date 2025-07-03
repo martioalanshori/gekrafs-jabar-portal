@@ -2,7 +2,16 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { Profile } from '@/types/database';
+
+interface Profile {
+  id: string;
+  email: string;
+  full_name?: string;
+  role: 'super_admin' | 'seller' | 'anggota_biasa' | 'admin_artikel';
+  campus?: string;
+  created_at?: string;
+  updated_at?: string;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -22,6 +31,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in fetchProfile:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -29,25 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Hardcode super admin for now
-          if (session.user.email === 'mar.tio9000@gmail.com') {
-            setProfile({
-              id: session.user.id,
-              email: session.user.email,
-              full_name: 'Muhammad Martio Alanshori',
-              role: 'super_admin',
-              campus: 'Universitas Padjadjaran'
-            });
-          } else {
-            // Default profile for other users
-            setProfile({
-              id: session.user.id,
-              email: session.user.email || '',
-              full_name: session.user.user_metadata?.full_name || 'User',
-              role: 'anggota_biasa',
-              campus: session.user.user_metadata?.campus || 'Tidak diketahui'
-            });
-          }
+          const profileData = await fetchProfile(session.user.id);
+          setProfile(profileData);
         } else {
           setProfile(null);
         }
@@ -57,9 +69,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        const profileData = await fetchProfile(session.user.id);
+        setProfile(profileData);
+      }
+      
       setLoading(false);
     });
 
