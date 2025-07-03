@@ -5,53 +5,83 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GraduationCap, Users, Target, Eye, ChevronLeft, ChevronRight, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CampusSlider from "@/components/CampusSlider";
+import OrganizationStats from "@/components/OrganizationStats";
+import GoogleMapsSection from "@/components/GoogleMapsSection";
 
 const Index = () => {
-  const [articles, setArticles] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  useEffect(() => {
-    fetchArticles();
-  }, []);
+  // Data dummy artikel
+  const dummyArticles = [
+    {
+      id: 1,
+      title: "Inovasi Mahasiswa GEKRAFS dalam Bidang Teknologi",
+      excerpt: "Mahasiswa GEKRAFS menciptakan aplikasi inovatif untuk membantu UMKM lokal dalam digitalisasi bisnis mereka...",
+      image_url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      category: "Teknologi"
+    },
+    {
+      id: 2,
+      title: "Workshop Kewirausahaan: Membangun Startup dari Kampus",
+      excerpt: "Event workshop kewirausahaan yang diselenggarakan GEKRAFS berhasil menarik lebih dari 200 mahasiswa...",
+      image_url: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      category: "Kewirausahaan"
+    },
+    {
+      id: 3,
+      title: "Festival Ekonomi Kreatif Jawa Barat 2024",
+      excerpt: "GEKRAFS Jawa Barat menyelenggarakan festival ekonomi kreatif tahunan yang menampilkan karya-karya inovatif mahasiswa...",
+      image_url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      category: "Event"
+    },
+    {
+      id: 4,
+      title: "Program Beasiswa GEKRAFS untuk Mahasiswa Berprestasi",
+      excerpt: "GEKRAFS membuka program beasiswa untuk mahasiswa berprestasi dengan latar belakang ekonomi kurang mampu...",
+      image_url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      category: "Beasiswa"
+    },
+    {
+      id: 5,
+      title: "Kolaborasi GEKRAFS dengan Pemerintah Daerah",
+      excerpt: "Kerjasama strategis GEKRAFS dengan Pemerintah Provinsi Jawa Barat dalam pengembangan ekonomi kreatif...",
+      image_url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      category: "Kerjasama"
+    },
+    {
+      id: 6,
+      title: "Pelatihan Leadership untuk Pengurus GEKRAFS",
+      excerpt: "Program pelatihan kepemimpinan intensif untuk meningkatkan kapasitas pengurus GEKRAFS di seluruh Jawa Barat...",
+      image_url: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      category: "Leadership"
+    }
+  ];
+
+  const totalSlides = Math.ceil(dummyArticles.length / 3);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 3);
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
     }, 2000);
 
     return () => clearInterval(timer);
-  }, []);
-
-  const fetchArticles = async () => {
-    try {
-      const { data } = await supabase
-        .from('articles')
-        .select('*')
-        .eq('published', true)
-        .order('created_at', { ascending: false })
-        .limit(6);
-      
-      setArticles(data || []);
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-    }
-  };
+  }, [totalSlides]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % 3);
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + 3) % 3);
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
   };
 
   const getSlideArticles = () => {
     const articlesPerSlide = 3;
     const start = currentSlide * articlesPerSlide;
-    return articles.slice(start, start + articlesPerSlide);
+    return dummyArticles.slice(start, start + articlesPerSlide);
   };
 
   return (
@@ -148,6 +178,12 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Campus Slider */}
+      <CampusSlider />
+
+      {/* Organization Stats */}
+      <OrganizationStats />
+
       {/* Pembina Message Section */}
       <section className="py-16 bg-gradient-to-br from-blue-50 to-green-50">
         <div className="container mx-auto px-4">
@@ -233,66 +269,64 @@ const Index = () => {
             <p className="text-xl text-gray-600">Berita dan informasi terbaru dari kegiatan kami</p>
           </div>
 
-          {articles.length > 0 && (
-            <div className="relative">
-              <div className="grid md:grid-cols-3 gap-8">
-                {getSlideArticles().map((article: any, index) => (
-                  <Card key={article.id} className="shadow-lg hover:shadow-xl transition-shadow border-0 bg-white">
-                    <div className="relative">
-                      <img 
-                        src={article.image_url} 
-                        alt={article.title}
-                        className="w-full h-48 object-cover rounded-t-lg"
-                      />
-                      <Badge className="absolute top-3 left-3">{article.category}</Badge>
-                    </div>
-                    <CardHeader>
-                      <CardTitle className="text-lg line-clamp-2">{article.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 text-sm line-clamp-3 mb-4">{article.excerpt}</p>
-                      <Button variant="outline" size="sm">
-                        Baca Selengkapnya
-                      </Button>
-                    </CardContent>
-                  </Card>
+          <div className="relative">
+            <div className="grid md:grid-cols-3 gap-8">
+              {getSlideArticles().map((article, index) => (
+                <Card key={article.id} className="shadow-lg hover:shadow-xl transition-shadow border-0 bg-white">
+                  <div className="relative">
+                    <img 
+                      src={article.image_url} 
+                      alt={article.title}
+                      className="w-full h-48 object-cover rounded-t-lg"
+                    />
+                    <Badge className="absolute top-3 left-3">{article.category}</Badge>
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="text-lg line-clamp-2">{article.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">{article.excerpt}</p>
+                    <Button variant="outline" size="sm">
+                      Baca Selengkapnya
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-center items-center mt-8 space-x-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={prevSlide}
+                className="p-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <div className="flex space-x-2">
+                {Array.from({ length: totalSlides }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      currentSlide === index ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  />
                 ))}
               </div>
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-center items-center mt-8 space-x-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={prevSlide}
-                  className="p-2"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                
-                <div className="flex space-x-2">
-                  {[0, 1, 2].map((index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentSlide(index)}
-                      className={`w-3 h-3 rounded-full transition-colors ${
-                        currentSlide === index ? 'bg-blue-600' : 'bg-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={nextSlide}
-                  className="p-2"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={nextSlide}
+                className="p-2"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
-          )}
+          </div>
 
           <div className="text-center mt-12">
             <Link to="/artikel">
@@ -303,6 +337,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Google Maps Section */}
+      <GoogleMapsSection />
 
       {/* CTA Section */}
       <section 

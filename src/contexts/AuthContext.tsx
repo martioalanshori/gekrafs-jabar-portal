@@ -2,14 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-
-interface Profile {
-  id: string;
-  email: string;
-  full_name?: string;
-  role: 'super_admin' | 'seller' | 'anggota_biasa' | 'admin_artikel';
-  campus?: string;
-}
+import { Profile } from '@/types/database';
 
 interface AuthContextType {
   user: User | null;
@@ -36,14 +29,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user profile
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          
-          setProfile(profileData);
+          // Try to fetch user profile with error handling
+          try {
+            const { data: profileData } = await supabase
+              .from('profiles' as any)
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+            
+            setProfile(profileData);
+          } catch (error) {
+            console.log('Profile not found, user may need to complete registration');
+            setProfile(null);
+          }
         } else {
           setProfile(null);
         }
