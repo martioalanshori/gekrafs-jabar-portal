@@ -1,59 +1,71 @@
-
-// Temporary database types until SQL migration is run
+// Database types that match the actual Supabase schema
 export interface Profile {
   id: string;
   email: string;
-  full_name?: string;
-  role: 'super_admin' | 'seller' | 'anggota_biasa' | 'admin_artikel';
-  campus?: string;
-  created_at?: string;
-  updated_at?: string;
+  full_name?: string | null;
+  role: 'super_admin' | 'admin_artikel' | 'seller' | 'anggota_biasa' | null;
+  campus?: string | null;
+  avatar_url?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface Article {
   id: string;
   title: string;
-  excerpt?: string;
+  excerpt?: string | null;
   content: string;
-  image_url?: string;
-  author_id: string;
-  category?: string;
-  published: boolean;
-  views?: number;
-  created_at?: string;
-  updated_at?: string;
+  image_url?: string | null;
+  author_id: string | null;
+  category?: string | null;
+  published: boolean | null;
+  views?: number | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface Product {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
   price: number;
-  image_url?: string;
-  seller_id: string;
-  category?: string;
-  stock: number;
-  active: boolean;
-  created_at?: string;
-  updated_at?: string;
+  image_url?: string | null;
+  seller_id: string | null;
+  category?: string | null;
+  stock: number | null;
+  active: boolean | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface Order {
   id: string;
-  user_id: string;
+  user_id: string | null;
   total_amount: number;
-  status: string;
-  payment_method?: string;
-  shipping_address?: string;
-  created_at?: string;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled' | null;
+  payment_method?: string | null;
+  shipping_address?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface OrderItem {
   id: string;
-  order_id: string;
-  product_id: string;
+  order_id: string | null;
+  product_id: string | null;
   quantity: number;
   price: number;
+  created_at?: string | null;
+}
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject?: string | null;
+  message: string;
+  status: 'new' | 'read' | 'replied' | 'closed' | null;
+  created_at?: string | null;
 }
 
 export interface ProgramRegistration {

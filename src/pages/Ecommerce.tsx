@@ -261,7 +261,7 @@ const Ecommerce = () => {
       {user && getTotalItems() > 0 && (
         <Link to="/cart">
           <Button 
-            className="fixed bottom-6 right-6 rounded-full p-4 shadow-2xl bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+            className="fixed bottom-6 right-6 rounded-full p-4 shadow-2xl bg-gradient-to-r from-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700"
             size="lg"
           >
             <ShoppingCart className="h-6 w-6 mr-2" />

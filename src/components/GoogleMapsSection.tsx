@@ -41,8 +41,8 @@ const GoogleMapsSection = () => {
 
               <div>
                 <h4 className="font-semibold text-gray-800 mb-2">Kontak:</h4>
-                <p className="text-gray-600">Email: info@gekrafs-jabar.org</p>
-                <p className="text-gray-600">Telepon: +62 812 3456 7890</p>
+                <p className="text-gray-600">Email: info@gekrafskampusjabar.my.id</p>
+                <p className="text-gray-600">Telepon: +62 822 1899 2356</p>
               </div>
             </CardContent>
           </Card>

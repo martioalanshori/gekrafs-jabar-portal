@@ -17,21 +17,32 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
+    try {
+      console.log('Attempting to sign out...');
+      await signOut();
+      console.log('Sign out successful, navigating to home...');
+      navigate('/', { replace: true });
+      // Force reload to clear any cached state
+      window.location.reload();
+    } catch (error) {
+      console.error('Error signing out:', error);
+      // Even if there's an error, try to navigate away
+      navigate('/', { replace: true });
+      window.location.reload();
+    }
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b smooth-transition">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-blue-600 to-green-600 p-2 rounded-lg">
-              <GraduationCap className="h-6 w-6 text-white" />
-            </div>
-            <span className="font-bold text-xl text-gray-800 hidden sm:block">GEKRAFS</span>
-          </Link>
+<Link to="/" className="flex items-center space-x-2">
+  <div className="p-2">
+    <img src="assets/img/gekrafslogo.png" alt="GEKRAFS Logo" className="h-8 w-8" />
+  </div>
+  <span className="font-bold text-xl text-gray-800 hidden sm:block">GEKRAFS Kampus Jabar</span>
+</Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
@@ -94,7 +105,21 @@ const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard">Dashboard</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleSignOut}>
+                    {(profile?.role === 'admin_artikel' || profile?.role === 'super_admin') && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard" onClick={() => {
+                          // This will navigate to dashboard and then set active section to articles
+                          setTimeout(() => {
+                            const event = new CustomEvent('setDashboardSection', { detail: 'articles' });
+                            window.dispatchEvent(event);
+                          }, 100);
+                        }}>Kelola Artikel</Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem 
+                      onClick={handleSignOut}
+                      className="cursor-pointer text-red-600 hover:text-red-700"
+                    >
                       <LogOut className="h-4 w-4 mr-2" />
                       Keluar
                     </DropdownMenuItem>
@@ -103,7 +128,7 @@ const Header = () => {
               </div>
             ) : (
               <Link to="/signin">
-                <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 flex items-center space-x-2">
+                <Button className="bg-gradient-to-r from-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700 flex items-center space-x-2">
                   <User className="h-4 w-4" />
                   <span>Masuk</span>
                 </Button>

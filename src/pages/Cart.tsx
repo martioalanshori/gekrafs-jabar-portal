@@ -11,6 +11,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Product } from "@/types/database";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Cart = () => {
   const { user } = useAuth();
@@ -87,21 +88,48 @@ const Cart = () => {
 
     setLoading(true);
     try {
-      // Simulate order creation
-      const orderData = {
-        user_id: user?.id,
-        total_amount: getTotalPrice(),
-        status: 'pending',
-        payment_method: paymentMethod,
-        shipping_address: shippingAddress
-      };
+      // Create order in Supabase
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          user_id: user?.id,
+          total_amount: getTotalPrice() + 15000, // Include shipping cost
+          status: 'pending',
+          payment_method: paymentMethod,
+          shipping_address: shippingAddress
+        })
+        .select()
+        .single();
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (orderError) throw orderError;
 
-      toast.success("Pesanan berhasil dibuat!");
+      // Create order items
+      const orderItems = Object.entries(cartItems).map(([productId, quantity]) => {
+        const product = products.find(p => p.id === productId);
+        return {
+          order_id: order.id,
+          product_id: productId,
+          quantity,
+          price: product?.price || 0
+        };
+      });
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      toast.success("Pesanan berhasil dibuat! Silakan tunggu konfirmasi pembayaran dari admin.");
       setCartItems({});
-      navigate('/dashboard');
+      
+      // Navigate to a success page or order details
+      navigate(`/dashboard`, { 
+        state: { 
+          message: `Pesanan #${order.id.slice(0, 8)} berhasil dibuat. Status: Menunggu Pembayaran`,
+          orderId: order.id 
+        } 
+      });
     } catch (error) {
       console.error('Error creating order:', error);
       toast.error("Gagal membuat pesanan");
@@ -134,7 +162,7 @@ const Cart = () => {
               <ShoppingBag className="h-24 w-24 text-gray-300 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-600 mb-2">Keranjang Kosong</h2>
               <p className="text-gray-500 mb-6">Belum ada produk di keranjang Anda</p>
-              <Button onClick={() => navigate('/ecommerce')} className="bg-gradient-to-r from-blue-600 to-green-600">
+              <Button onClick={() => navigate('/ecommerce')} className="bg-gradient-to-r from-sky-600 to-yellow-6000">
                 Mulai Belanja
               </Button>
             </div>
@@ -250,7 +278,7 @@ const Cart = () => {
                     <Button
                       onClick={handleCheckout}
                       disabled={loading}
-                      className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+                      className="w-full bg-gradient-to-r from-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700"
                     >
                       {loading ? "Memproses..." : "Checkout"}
                     </Button>

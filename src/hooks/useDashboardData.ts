@@ -38,76 +38,113 @@ export const useDashboardData = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchDashboardData = async () => {
-    if (!user || !profile) return;
+    if (!user || !profile) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
+      console.log('Fetching dashboard data for user:', user.id, 'role:', profile.role);
       
+      // Use Promise.all untuk parallel queries dan batasi hanya query yang diperlukan
+      const queries = [];
+
       // Fetch total users (only for super admin)
-      let totalUsers = 0;
       if (profile.role === 'super_admin') {
-        const { count: usersCount } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true });
-        totalUsers = usersCount || 0;
+        queries.push(
+          supabase.from('profiles').select('id', { count: 'exact', head: true })
+        );
+      } else {
+        queries.push(Promise.resolve({ count: 0 }));
       }
 
-      // Fetch articles
-      let articlesQuery = supabase.from('articles').select('*', { count: 'exact' });
+      // Fetch articles dengan filter berdasarkan role
+      let articlesQuery = supabase.from('articles').select('id', { count: 'exact', head: true });
       if (profile.role === 'admin_artikel') {
         articlesQuery = articlesQuery.eq('author_id', user.id);
       }
-      const { count: articlesCount, data: articlesData } = await articlesQuery;
+      queries.push(articlesQuery);
 
-      // Fetch products
-      let productsQuery = supabase.from('products').select('*', { count: 'exact' });
+      // Fetch products dengan filter berdasarkan role
+      let productsQuery = supabase.from('products').select('id', { count: 'exact', head: true });
       if (profile.role === 'seller') {
         productsQuery = productsQuery.eq('seller_id', user.id);
       }
-      const { count: productsCount, data: productsData } = await productsQuery;
+      queries.push(productsQuery);
 
-      // Fetch orders
-      let ordersQuery = supabase.from('orders').select('*', { count: 'exact' });
+      // Fetch orders dengan filter berdasarkan role
+      let ordersQuery = supabase.from('orders').select('id', { count: 'exact', head: true });
       if (profile.role !== 'super_admin') {
         ordersQuery = ordersQuery.eq('user_id', user.id);
       }
-      const { count: ordersCount, data: ordersData } = await ordersQuery;
+      queries.push(ordersQuery);
 
-      // Fetch contact messages (booking meetings)
-      let contactQuery = supabase.from('contact_messages').select('*', { count: 'exact' });
-      const { count: contactCount } = await contactQuery;
+      // Fetch contact messages (hanya untuk super admin)
+      if (profile.role === 'super_admin') {
+        queries.push(
+          supabase.from('contact_messages').select('id', { count: 'exact', head: true })
+        );
+      } else {
+        queries.push(Promise.resolve({ count: 0 }));
+      }
 
-      // Calculate active accounts (users with recent activity - simplified)
-      const activeAccounts = Math.floor(totalUsers * 0.8);
+      // Execute all queries in parallel
+      const [
+        { count: usersCount },
+        { count: articlesCount },
+        { count: productsCount },
+        { count: ordersCount },
+        { count: contactCount }
+      ] = await Promise.all(queries);
 
-      // Generate monthly data
-      const monthlyData = [
-        { month: 'Jan', articles: 8, products: 12, orders: 25 },
-        { month: 'Feb', articles: 12, products: 15, orders: 30 },
-        { month: 'Mar', articles: 15, products: 18, orders: 35 },
-        { month: 'Apr', articles: 18, products: 22, orders: 40 },
-        { month: 'May', articles: 22, products: 25, orders: 45 },
-        { month: 'Jun', articles: 25, products: 28, orders: 50 }
-      ];
+      console.log('Query results:', {
+        usersCount,
+        articlesCount,
+        productsCount,
+        ordersCount,
+        contactCount
+      });
 
-      // Orders by status
+      // Calculate active accounts (simplified)
+      const activeAccounts = profile.role === 'super_admin' ? Math.floor((usersCount || 0) * 0.8) : 0;
+
+      // Generate simplified monthly data
+      const currentMonth = new Date().getMonth();
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthlyData = [];
+      
+      for (let i = 5; i >= 0; i--) {
+        const monthIndex = (currentMonth - i + 12) % 12;
+        monthlyData.push({
+          month: monthNames[monthIndex],
+          articles: Math.floor((articlesCount || 0) / 6),
+          products: Math.floor((productsCount || 0) / 6),
+          orders: Math.floor((ordersCount || 0) / 6)
+        });
+      }
+
+      // Orders by status (simplified)
+      const totalOrders = ordersCount || 0;
       const ordersByStatus = [
-        { status: 'pending', count: Math.floor((ordersCount || 0) * 0.4) },
-        { status: 'processing', count: Math.floor((ordersCount || 0) * 0.3) },
-        { status: 'completed', count: Math.floor((ordersCount || 0) * 0.25) },
-        { status: 'cancelled', count: Math.floor((ordersCount || 0) * 0.05) }
+        { status: 'pending', count: Math.floor(totalOrders * 0.4) },
+        { status: 'processing', count: Math.floor(totalOrders * 0.3) },
+        { status: 'completed', count: Math.floor(totalOrders * 0.25) },
+        { status: 'cancelled', count: Math.floor(totalOrders * 0.05) }
       ];
 
       setStats({
-        totalUsers,
+        totalUsers: usersCount || 0,
         totalArticles: articlesCount || 0,
         totalProducts: productsCount || 0,
-        totalOrders: ordersCount || 0,
+        totalOrders: totalOrders,
         activeAccounts,
         bookingMeetings: contactCount || 0,
         monthlyData,
         ordersByStatus
       });
+
+      console.log('Dashboard stats updated successfully');
 
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
@@ -121,44 +158,48 @@ export const useDashboardData = () => {
     fetchDashboardData();
   }, [user, profile]);
 
-  // Set up realtime subscriptions
+  // Simplified realtime subscriptions - hanya 1 channel untuk mengurangi overhead
   useEffect(() => {
     if (!user || !profile) return;
 
-    const channels: any[] = [];
-
-    // Subscribe to articles changes
-    const articlesChannel = supabase
-      .channel('articles-changes')
+    console.log('Setting up realtime subscription');
+    
+    // Single channel untuk semua perubahan database
+    const channel = supabase
+      .channel('dashboard-changes')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'articles' },
-        () => fetchDashboardData()
+        () => {
+          console.log('Articles changed, refreshing data');
+          fetchDashboardData();
+        }
       )
-      .subscribe();
-    channels.push(articlesChannel);
-
-    // Subscribe to products changes
-    const productsChannel = supabase
-      .channel('products-changes')
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'products' },
-        () => fetchDashboardData()
+        () => {
+          console.log('Products changed, refreshing data');
+          fetchDashboardData();
+        }
       )
-      .subscribe();
-    channels.push(productsChannel);
-
-    // Subscribe to orders changes
-    const ordersChannel = supabase
-      .channel('orders-changes')
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },
-        () => fetchDashboardData()
+        () => {
+          console.log('Orders changed, refreshing data');
+          fetchDashboardData();
+        }
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'contact_messages' },
+        () => {
+          console.log('Contact messages changed, refreshing data');
+          fetchDashboardData();
+        }
       )
       .subscribe();
-    channels.push(ordersChannel);
 
     return () => {
-      channels.forEach(channel => supabase.removeChannel(channel));
+      console.log('Cleaning up realtime subscription');
+      supabase.removeChannel(channel);
     };
   }, [user, profile]);
 

@@ -3,27 +3,18 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { GraduationCap, Users, Target, Calendar, MapPin, Clock } from "lucide-react";
 import { Link, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Program = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
-  const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    campus: '',
-    motivation: ''
-  });
+  const [loading, setLoading] = useState(false);
 
   const programs = [
     {
@@ -120,49 +111,55 @@ const Program = () => {
     }
   ];
 
-  if (!user) {
-    return <Navigate to="/signin" replace />;
-  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedProgram) {
-      toast({
-        title: "Error",
-        description: "Silakan pilih program terlebih dahulu",
-        variant: "destructive",
-      });
+  const handleRegisterProgram = async (programId: string, programTitle: string) => {
+    if (!user || !profile) {
+      // Redirect to login page with return URL
+      window.location.href = "/signin";
       return;
     }
 
-    // Simulate registration - in real app, this would save to database
-    console.log('Registration data:', {
-      user_id: user.id,
-      program_name: selectedProgram,
-      ...formData
-    });
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('program_registrations')
+        .insert({
+          user_id: user.id,
+          program_name: programTitle,
+          full_name: profile.full_name || 'User',
+          email: user.email || '',
+          phone: '', // User can update this in their profile
+          campus: profile.campus || '',
+          motivation: 'Registered from program page',
+          status: 'pending'
+        });
 
-    toast({
-      title: "Pendaftaran Berhasil!",
-      description: "Terima kasih telah mendaftar. Tim kami akan menghubungi Anda segera.",
-    });
-
-    // Reset form
-    setFormData({
-      fullName: '',
-      email: '',
-      phone: '',
-      campus: '',
-      motivation: ''
-    });
-    setSelectedProgram(null);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+      if (error) {
+        if (error.code === '23505') { // Unique constraint violation
+          toast({
+            title: "Info",
+            description: "Anda sudah terdaftar dalam program ini",
+            variant: "default",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({
+          title: "Pendaftaran Berhasil!",
+          description: `Anda berhasil mendaftar program ${programTitle}. Silakan cek dashboard untuk status pendaftaran.`,
+        });
+      }
+    } catch (error) {
+      console.error('Error registering for program:', error);
+      toast({
+        title: "Error",
+        description: "Gagal mendaftar program. Silakan coba lagi.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -199,7 +196,7 @@ const Program = () => {
                     />
                     <div className={`absolute top-4 left-4 bg-gradient-to-r ${program.color} px-4 py-2 rounded-full`}>
                       <Badge className="bg-white text-gray-800 font-medium">
-                        {program.id === selectedProgram ? "Dipilih" : "Tersedia"}
+                        Tersedia
                       </Badge>
                     </div>
                   </div>
@@ -257,13 +254,11 @@ const Program = () => {
                     </div>
 
                     <Button 
-                      onClick={() => setSelectedProgram(program.id)}
-                      className={`w-full ${selectedProgram === program.id 
-                        ? 'bg-green-600 hover:bg-green-700' 
-                        : 'bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700'
-                      }`}
+                      onClick={() => handleRegisterProgram(program.id, program.title)}
+                      disabled={loading}
+                      className="w-full bg-gradient-to-r from-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700"
                     >
-                      {selectedProgram === program.id ? "Program Dipilih ✓" : "Pilih Program"}
+                      {loading ? 'Mendaftar...' : 'Daftar Program'}
                     </Button>
                   </CardContent>
                 </Card>
@@ -271,110 +266,6 @@ const Program = () => {
             </div>
           </div>
         </section>
-
-        {/* Registration Form */}
-        {selectedProgram && (
-          <section className="py-16 bg-gradient-to-br from-blue-50 to-green-50">
-            <div className="container mx-auto px-4">
-              <Card className="max-w-2xl mx-auto shadow-xl border-0">
-                <CardHeader>
-                  <CardTitle className="text-2xl text-center">Form Pendaftaran Program</CardTitle>
-                  <p className="text-center text-gray-600">
-                    Program yang dipilih: <strong>{programs.find(p => p.id === selectedProgram)?.title}</strong>
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="fullName">Nama Lengkap *</Label>
-                        <Input
-                          id="fullName"
-                          name="fullName"
-                          type="text"
-                          value={formData.fullName}
-                          onChange={handleInputChange}
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email *</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="phone">Nomor Telepon *</Label>
-                        <Input
-                          id="phone"
-                          name="phone"
-                          type="tel"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="campus">Asal Kampus *</Label>
-                        <Input
-                          id="campus"
-                          name="campus"
-                          type="text"
-                          value={formData.campus}
-                          onChange={handleInputChange}
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="motivation">Motivasi Mengikuti Program *</Label>
-                      <Textarea
-                        id="motivation"
-                        name="motivation"
-                        value={formData.motivation}
-                        onChange={handleInputChange}
-                        required
-                        rows={4}
-                        className="mt-1"
-                        placeholder="Ceritakan motivasi dan harapan Anda mengikuti program ini..."
-                      />
-                    </div>
-
-                    <div className="flex space-x-4">
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={() => setSelectedProgram(null)}
-                        className="flex-1"
-                      >
-                        Batal
-                      </Button>
-                      <Button 
-                        type="submit" 
-                        className="flex-1 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-                      >
-                        Daftar Program
-                      </Button>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-          </section>
-        )}
       </div>
       
       <Footer />

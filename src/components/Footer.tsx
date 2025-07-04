@@ -1,4 +1,3 @@
-
 import { GraduationCap, Mail, Phone, MapPin, Instagram, Twitter, Youtube, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -8,24 +7,24 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & Contact Info */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="bg-gradient-to-r from-blue-600 to-green-600 p-2 rounded-lg">
-                <GraduationCap className="h-6 w-6 text-white" />
+          <div className="space-y-4 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start space-x-2">
+              <div className="p-0">
+                    <img src="assets/img/gekrafslogo.png" alt="GEKRAFS Logo" className="h-8 w-8" />
               </div>
-              <span className="font-bold text-xl">GEKRAFS</span>
+              <span className="font-bold text-xl">GEKRAFS Kampus Jabar</span>
             </div>
             
             <div className="space-y-2 text-gray-300">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-center md:justify-start space-x-2">
                 <Mail className="h-4 w-4" />
-                <span className="text-sm">info@gekrafs-jabar.org</span>
+                <span className="text-sm">info@gekrafskampusjabar.my.id</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-center md:justify-start space-x-2">
                 <Phone className="h-4 w-4" />
-                <span className="text-sm">+62 812 3456 7890</span>
+                <span className="text-sm">+62 822 1899 2356</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-center md:justify-start space-x-2">
                 <MapPin className="h-4 w-4" />
                 <span className="text-sm">Bandung, Jawa Barat</span>
               </div>
@@ -33,7 +32,7 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="text-center md:text-left">
             <h4 className="font-semibold text-lg mb-4">Menu Utama</h4>
             <div className="space-y-2">
               <Link to="/organisasi" className="block text-gray-300 hover:text-white transition-colors text-sm">
@@ -52,7 +51,7 @@ const Footer = () => {
           </div>
 
           {/* About Links */}
-          <div>
+          <div className="text-center md:text-left">
             <h4 className="font-semibold text-lg mb-4">Tentang Kami</h4>
             <div className="space-y-2">
               <Link to="/ad-art" className="block text-gray-300 hover:text-white transition-colors text-sm">
@@ -68,9 +67,9 @@ const Footer = () => {
           </div>
 
           {/* Social Media */}
-          <div>
+          <div className="text-center md:text-left">
             <h4 className="font-semibold text-lg mb-4">Media Sosial</h4>
-            <div className="flex space-x-4">
+            <div className="flex justify-center md:justify-start space-x-4">
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
@@ -93,7 +92,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          © 2024 GEKRAFS Jawa Barat. Semua hak cipta dilindungi.
+          © 2025 GEKRAFS Kampus Jawa Barat. Semua hak cipta dilindungi.
         </div>
       </div>
     </footer>

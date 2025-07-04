@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +25,7 @@ interface Article {
 }
 
 const Artikel = () => {
+  const navigate = useNavigate();
   const [articles, setArticles] = useState<Article[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -141,7 +143,10 @@ const Artikel = () => {
                     <span>{article.created_at ? new Date(article.created_at).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</span>
                     <span>{article.views || 0} views</span>
                   </div>
-                  <Button className="w-full">
+                  <Button 
+                    className="w-full"
+                    onClick={() => navigate(`/artikel/${article.id}`)}
+                  >
                     Baca Selengkapnya
                   </Button>
                 </CardContent>

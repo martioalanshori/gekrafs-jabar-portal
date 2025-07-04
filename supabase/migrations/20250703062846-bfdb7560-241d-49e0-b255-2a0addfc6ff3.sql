@@ -170,22 +170,23 @@ CREATE POLICY "Anyone can create contact messages" ON public.contact_messages
 
 -- Create function to handle new user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path = ''
+AS $function$
 BEGIN
   INSERT INTO public.profiles (id, email, full_name, role, campus)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', 'User'),
-    CASE 
-      WHEN NEW.email = 'mar.tio9000@gmail.com' THEN 'super_admin'
-      ELSE 'anggota_biasa'
-    END,
+    COALESCE(NEW.raw_user_meta_data->>'role', 'anggota_biasa'),
     COALESCE(NEW.raw_user_meta_data->>'campus', 'Tidak diketahui')
   );
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$function$;
 
 -- Create trigger for new user signup
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;

@@ -14,6 +14,7 @@ import Kepengurusan from "./pages/Kepengurusan";
 import DewanPembina from "./pages/DewaanPembina";
 import Program from "./pages/Program";
 import Artikel from "./pages/Artikel";
+import ArticleDetail from "./pages/ArticleDetail";
 import Contact from "./pages/Contact";
 import Ecommerce from "./pages/Ecommerce";
 import Cart from "./pages/Cart";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/dewan-pembina" element={<DewanPembina />} />
             <Route path="/program" element={<Program />} />
             <Route path="/artikel" element={<Artikel />} />
+            <Route path="/artikel/:id" element={<ArticleDetail />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/ecommerce" element={<Ecommerce />} />
             <Route path="/cart" element={<Cart />} />

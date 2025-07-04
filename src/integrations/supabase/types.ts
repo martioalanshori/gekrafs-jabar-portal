@@ -200,6 +200,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           campus: string | null
           created_at: string | null
           email: string
@@ -209,6 +210,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          avatar_url?: string | null
           campus?: string | null
           created_at?: string | null
           email: string
@@ -218,6 +220,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          avatar_url?: string | null
           campus?: string | null
           created_at?: string | null
           email?: string
@@ -225,6 +228,45 @@ export type Database = {
           id?: string
           role?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      program_registrations: {
+        Row: {
+          campus: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          motivation: string | null
+          phone: string | null
+          program_name: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          campus?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          motivation?: string | null
+          phone?: string | null
+          program_name: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          campus?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          motivation?: string | null
+          phone?: string | null
+          program_name?: string
+          status?: string | null
+          user_id?: string
         }
         Relationships: []
       }

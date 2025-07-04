@@ -123,7 +123,7 @@ const AdArt = () => {
 
           <div className="text-center">
             <Link to="/">
-              <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+              <Button className="bg-gradient-to-r from-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700">
                 Kembali ke Beranda
               </Button>
             </Link>

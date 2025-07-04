@@ -13,9 +13,9 @@ const Organisasi = () => {
       <div className="pt-16">
         <div className="container mx-auto px-4 py-20">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">Organisasi GEKRAFS Jawa Barat</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">Organisasi GEKRAFS Kampus Jawa Barat</h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Mengenal lebih dalam tentang struktur dan tujuan organisasi GEKRAFS Kampus Jawa Barat
+              Mengenal lebih dalam tentang struktur dan tujuan organisasi.
             </p>
           </div>
 
@@ -83,7 +83,7 @@ const Organisasi = () => {
 
           <div className="text-center">
             <Link to="/">
-              <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+              <Button className="bg-gradient-to-r from-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700">
                 Kembali ke Beranda
               </Button>
             </Link>

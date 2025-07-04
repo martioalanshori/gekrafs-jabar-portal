@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Eye, Mail, MessageSquare } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { ContactMessage } from '@/types/database';
 import {
   Dialog,
   DialogContent,
@@ -13,16 +14,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-
-interface ContactMessage {
-  id: string;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  status: 'new' | 'read' | 'replied' | 'closed';
-  created_at: string;
-}
 
 const ContactMessagesManagement = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
@@ -37,7 +28,7 @@ const ContactMessagesManagement = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setMessages(data || []);
+      setMessages(data as ContactMessage[] || []);
     } catch (error) {
       console.error('Error fetching messages:', error);
       toast.error('Gagal memuat pesan');
@@ -50,7 +41,7 @@ const ContactMessagesManagement = () => {
     fetchMessages();
   }, []);
 
-  const updateMessageStatus = async (id: string, status: ContactMessage['status']) => {
+  const updateMessageStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
         .from('contact_messages')
@@ -73,7 +64,7 @@ const ContactMessagesManagement = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'new': return 'bg-red-500';
       case 'read': return 'bg-blue-500';
@@ -83,13 +74,13 @@ const ContactMessagesManagement = () => {
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status: string | null) => {
     switch (status) {
       case 'new': return 'Baru';
       case 'read': return 'Dibaca';
       case 'replied': return 'Dibalas';
       case 'closed': return 'Ditutup';
-      default: return status;
+      default: return 'Unknown';
     }
   };
 
@@ -120,10 +111,10 @@ const ContactMessagesManagement = () => {
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-600">{message.email}</p>
-                  <p className="text-sm font-medium mt-1">{message.subject}</p>
+                  <p className="text-sm font-medium mt-1">{message.subject || 'No Subject'}</p>
                   <p className="text-sm text-gray-600 mt-1 line-clamp-1">{message.message}</p>
                   <p className="text-xs text-gray-400 mt-2">
-                    {new Date(message.created_at).toLocaleDateString('id-ID', {
+                    {message.created_at && new Date(message.created_at).toLocaleDateString('id-ID', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
@@ -159,7 +150,7 @@ const ContactMessagesManagement = () => {
                           </div>
                           <div>
                             <label className="font-medium">Subjek:</label>
-                            <p>{selectedMessage.subject}</p>
+                            <p>{selectedMessage.subject || 'No Subject'}</p>
                           </div>
                           <div>
                             <label className="font-medium">Pesan:</label>
@@ -173,7 +164,7 @@ const ContactMessagesManagement = () => {
                                   key={status}
                                   variant={selectedMessage.status === status ? "default" : "outline"}
                                   size="sm"
-                                  onClick={() => updateMessageStatus(selectedMessage.id, status as ContactMessage['status'])}
+                                  onClick={() => updateMessageStatus(selectedMessage.id, status)}
                                 >
                                   {getStatusText(status)}
                                 </Button>
@@ -187,7 +178,7 @@ const ContactMessagesManagement = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => window.open(`mailto:${message.email}?subject=Re: ${message.subject}`)}
+                    onClick={() => window.open(`mailto:${message.email}?subject=Re: ${message.subject || 'Your Message'}`)}
                   >
                     <Mail className="h-4 w-4" />
                   </Button>
