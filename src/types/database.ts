@@ -90,6 +90,10 @@ export interface Program {
   max_participants: number | null;
   current_participants: number | null;
   active: boolean | null;
+  image_url?: string | null;
+  google_form_url?: string | null;
+  benefits?: string | null;
+  requirements?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
 }

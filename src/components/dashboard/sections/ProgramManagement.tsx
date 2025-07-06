@@ -5,10 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Users, Eye, Plus, Edit, Trash2 } from 'lucide-react';
+import { Calendar, Plus, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ProgramRegistration, Program } from '@/types/database';
+import { Program } from '@/types/database';
 import {
   Dialog,
   DialogContent,
@@ -19,11 +19,8 @@ import {
 
 
 const ProgramManagement = () => {
-  const [registrations, setRegistrations] = useState<ProgramRegistration[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRegistration, setSelectedRegistration] = useState<ProgramRegistration | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isProgramDialogOpen, setIsProgramDialogOpen] = useState(false);
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
   const [programFormData, setProgramFormData] = useState({
@@ -32,23 +29,12 @@ const ProgramManagement = () => {
     start_date: '',
     end_date: '',
     max_participants: '',
+    image_url: '',
+    google_form_url: '',
+    benefits: '',
+    requirements: '',
     active: true
   });
-
-  const fetchRegistrations = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('program_registrations')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setRegistrations(data as ProgramRegistration[] || []);
-    } catch (error) {
-      console.error('Error fetching registrations:', error);
-      toast.error('Gagal memuat data pendaftaran program');
-    }
-  };
 
   const fetchPrograms = async () => {
     try {
@@ -68,60 +54,8 @@ const ProgramManagement = () => {
   };
 
   useEffect(() => {
-    fetchRegistrations();
     fetchPrograms();
   }, []);
-
-  // Real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('program-registrations-changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'program_registrations' },
-        () => {
-          fetchRegistrations();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const updateStatus = async (id: string, status: string) => {
-    try {
-      const { error } = await supabase
-        .from('program_registrations')
-        .update({ status })
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Status pendaftaran diperbarui');
-      fetchRegistrations();
-    } catch (error) {
-      console.error('Error updating status:', error);
-      toast.error('Gagal memperbarui status');
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-500';
-      case 'approved': return 'bg-green-500';
-      case 'rejected': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Menunggu';
-      case 'approved': return 'Disetujui';
-      case 'rejected': return 'Ditolak';
-      default: return status;
-    }
-  };
 
   const resetProgramForm = () => {
     setProgramFormData({
@@ -130,6 +64,10 @@ const ProgramManagement = () => {
       start_date: '',
       end_date: '',
       max_participants: '',
+      image_url: '',
+      google_form_url: '',
+      benefits: '',
+      requirements: '',
       active: true
     });
     setEditingProgram(null);
@@ -145,6 +83,10 @@ const ProgramManagement = () => {
         start_date: programFormData.start_date,
         end_date: programFormData.end_date,
         max_participants: parseInt(programFormData.max_participants) || 50,
+        image_url: programFormData.image_url,
+        google_form_url: programFormData.google_form_url,
+        benefits: programFormData.benefits,
+        requirements: programFormData.requirements,
         active: programFormData.active,
       };
 
@@ -182,6 +124,10 @@ const ProgramManagement = () => {
       start_date: program.start_date,
       end_date: program.end_date,
       max_participants: program.max_participants?.toString() || '50',
+      image_url: program.image_url || '',
+      google_form_url: program.google_form_url || '',
+      benefits: program.benefits || '',
+      requirements: program.requirements || '',
       active: program.active
     });
     setIsProgramDialogOpen(true);
@@ -248,6 +194,28 @@ const ProgramManagement = () => {
                 placeholder="Deskripsi Program"
                 value={programFormData.description}
                 onChange={(e) => setProgramFormData({ ...programFormData, description: e.target.value })}
+                className="min-h-20"
+              />
+              <Input
+                placeholder="URL Gambar Program"
+                value={programFormData.image_url}
+                onChange={(e) => setProgramFormData({ ...programFormData, image_url: e.target.value })}
+              />
+              <Input
+                placeholder="URL Google Form Pendaftaran"
+                value={programFormData.google_form_url}
+                onChange={(e) => setProgramFormData({ ...programFormData, google_form_url: e.target.value })}
+              />
+              <Textarea
+                placeholder="Manfaat Program"
+                value={programFormData.benefits}
+                onChange={(e) => setProgramFormData({ ...programFormData, benefits: e.target.value })}
+                className="min-h-20"
+              />
+              <Textarea
+                placeholder="Persyaratan Program"
+                value={programFormData.requirements}
+                onChange={(e) => setProgramFormData({ ...programFormData, requirements: e.target.value })}
                 className="min-h-20"
               />
               <div className="grid grid-cols-2 gap-4">
@@ -361,113 +329,6 @@ const ProgramManagement = () => {
         </CardContent>
       </Card>
 
-      {/* Program Registrations */}
-      <Card className="hover-lift smooth-transition">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Users className="h-5 w-5 mr-2" />
-            Pendaftaran Program
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {registrations.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <p>Belum ada pendaftaran program</p>
-                <p className="text-sm mt-2">Pendaftaran akan muncul di sini setelah ada yang mendaftar</p>
-              </div>
-            ) : (
-              registrations.map((registration) => (
-                <div key={registration.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 smooth-transition">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <h3 className="font-medium">{registration.full_name}</h3>
-                      <Badge className={`${getStatusColor(registration.status)} text-white`}>
-                        {getStatusText(registration.status)}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-gray-600">{registration.email}</p>
-                    <p className="text-sm font-medium mt-1">{registration.program_name}</p>
-                    <p className="text-sm text-gray-600 mt-1">Campus: {registration.campus}</p>
-                    <p className="text-xs text-gray-400 mt-2">
-                      {new Date(registration.created_at).toLocaleDateString('id-ID', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
-                  </div>
-                  <div className="flex flex-col space-y-2">
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setSelectedRegistration(registration)}
-                          className="hover:scale-105 smooth-transition"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl animate-scale-in">
-                        <DialogHeader>
-                          <DialogTitle>Detail Pendaftaran Program</DialogTitle>
-                        </DialogHeader>
-                        {selectedRegistration && (
-                          <div className="space-y-4">
-                            <div>
-                              <label className="font-medium">Program:</label>
-                              <p>{selectedRegistration.program_name}</p>
-                            </div>
-                            <div>
-                              <label className="font-medium">Nama Lengkap:</label>
-                              <p>{selectedRegistration.full_name}</p>
-                            </div>
-                            <div>
-                              <label className="font-medium">Email:</label>
-                              <p>{selectedRegistration.email}</p>
-                            </div>
-                            <div>
-                              <label className="font-medium">Telepon:</label>
-                              <p>{selectedRegistration.phone || 'Tidak diisi'}</p>
-                            </div>
-                            <div>
-                              <label className="font-medium">Campus:</label>
-                              <p>{selectedRegistration.campus || 'Tidak diisi'}</p>
-                            </div>
-                            <div>
-                              <label className="font-medium">Motivasi:</label>
-                              <p className="whitespace-pre-wrap">{selectedRegistration.motivation || 'Tidak diisi'}</p>
-                            </div>
-                            <div>
-                              <label className="font-medium">Status:</label>
-                              <div className="flex space-x-2 mt-2">
-                                {['pending', 'approved', 'rejected'].map((status) => (
-                                  <Button
-                                    key={status}
-                                    variant={selectedRegistration.status === status ? "default" : "outline"}
-                                    size="sm"
-                                    onClick={() => updateStatus(selectedRegistration.id, status)}
-                                    className="hover:scale-105 smooth-transition"
-                                  >
-                                    {getStatusText(status)}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

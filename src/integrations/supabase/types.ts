@@ -314,37 +314,49 @@ export type Database = {
       programs: {
         Row: {
           active: boolean | null
+          benefits: string | null
           created_at: string
           current_participants: number | null
           description: string | null
           end_date: string
+          google_form_url: string | null
           id: string
+          image_url: string | null
           max_participants: number | null
           name: string
+          requirements: string | null
           start_date: string
           updated_at: string
         }
         Insert: {
           active?: boolean | null
+          benefits?: string | null
           created_at?: string
           current_participants?: number | null
           description?: string | null
           end_date: string
+          google_form_url?: string | null
           id?: string
+          image_url?: string | null
           max_participants?: number | null
           name: string
+          requirements?: string | null
           start_date: string
           updated_at?: string
         }
         Update: {
           active?: boolean | null
+          benefits?: string | null
           created_at?: string
           current_participants?: number | null
           description?: string | null
           end_date?: string
+          google_form_url?: string | null
           id?: string
+          image_url?: string | null
           max_participants?: number | null
           name?: string
+          requirements?: string | null
           start_date?: string
           updated_at?: string
         }

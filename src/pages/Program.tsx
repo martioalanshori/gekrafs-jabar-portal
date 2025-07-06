@@ -46,53 +46,15 @@ const Program = () => {
   }, []);
 
 
-  const handleRegisterProgram = async (programId: string, programTitle: string) => {
-    if (!user || !profile) {
-      // Redirect to login page with return URL
-      window.location.href = "/signin";
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { error } = await supabase
-        .from('program_registrations')
-        .insert({
-          user_id: user.id,
-          program_name: programTitle,
-          full_name: profile.full_name || 'User',
-          email: user.email || '',
-          phone: '', // User can update this in their profile
-          campus: profile.campus || '',
-          motivation: 'Registered from program page',
-          status: 'pending'
-        });
-
-      if (error) {
-        if (error.code === '23505') { // Unique constraint violation
-          toast({
-            title: "Info",
-            description: "Anda sudah terdaftar dalam program ini",
-            variant: "default",
-          });
-        } else {
-          throw error;
-        }
-      } else {
-        toast({
-          title: "Pendaftaran Berhasil!",
-          description: `Anda berhasil mendaftar program ${programTitle}. Silakan cek dashboard untuk status pendaftaran.`,
-        });
-      }
-    } catch (error) {
-      console.error('Error registering for program:', error);
+  const handleRegisterProgram = (googleFormUrl: string) => {
+    if (googleFormUrl) {
+      window.open(googleFormUrl, '_blank');
+    } else {
       toast({
         title: "Error",
-        description: "Gagal mendaftar program. Silakan coba lagi.",
+        description: "Link pendaftaran tidak tersedia",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -135,7 +97,7 @@ const Program = () => {
                   <Card key={program.id} className="shadow-xl border-0 overflow-hidden">
                     <div className="relative">
                       <img 
-                        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        src={program.image_url || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
                         alt={program.name}
                         className="w-full h-64 object-cover"
                       />
@@ -172,12 +134,27 @@ const Program = () => {
                         </div>
                       </div>
 
+                      {/* Benefits */}
+                      {program.benefits && (
+                        <div>
+                          <h4 className="font-semibold mb-2">Manfaat Program:</h4>
+                          <p className="text-sm text-gray-600 whitespace-pre-wrap">{program.benefits}</p>
+                        </div>
+                      )}
+
+                      {/* Requirements */}
+                      {program.requirements && (
+                        <div>
+                          <h4 className="font-semibold mb-2">Persyaratan:</h4>
+                          <p className="text-sm text-gray-600 whitespace-pre-wrap">{program.requirements}</p>
+                        </div>
+                      )}
+
                       <Button 
-                        onClick={() => handleRegisterProgram(program.id, program.name)}
-                        disabled={loading}
+                        onClick={() => handleRegisterProgram(program.google_form_url || '')}
                         className="w-full bg-gradient-to-r from-sky-600 to-yellow-600 hover:from-sky-700 hover:to-yellow-700"
                       >
-                        {loading ? 'Mendaftar...' : 'Daftar Program'}
+                        Daftar Program
                       </Button>
                     </CardContent>
                   </Card>
