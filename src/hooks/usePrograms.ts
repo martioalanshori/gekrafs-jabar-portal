@@ -24,11 +24,29 @@ export const usePrograms = () => {
     }
   };
 
-  const createProgram = async (programData: Omit<Program, 'id' | 'created_at' | 'updated_at' | 'current_participants'>) => {
+  const createProgram = async (programData: any) => {
     try {
+      // Prepare data for database insertion
+      const dbData = {
+        name: programData.name,
+        description: programData.description,
+        duration: programData.duration,
+        schedule: programData.schedule,
+        location: programData.location,
+        max_participants: programData.max_participants,
+        image_url: programData.image_url,
+        google_form_url: programData.google_form_url,
+        benefits: programData.benefits,
+        requirements: programData.requirements,
+        active: programData.active,
+        // Keep start_date and end_date as null for now
+        start_date: null,
+        end_date: null
+      };
+
       const { error } = await supabase
         .from('programs')
-        .insert([programData]);
+        .insert([dbData]);
       
       if (error) throw error;
       toast.success('Program berhasil dibuat');

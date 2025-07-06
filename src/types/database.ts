@@ -85,8 +85,11 @@ export interface Program {
   id: string;
   name: string;
   description?: string | null;
-  start_date: string;
-  end_date: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  duration?: string | null;
+  schedule?: string | null;
+  location?: string | null;
   max_participants: number | null;
   current_participants: number | null;
   active: boolean | null;

@@ -318,14 +318,17 @@ export type Database = {
           created_at: string
           current_participants: number | null
           description: string | null
-          end_date: string
+          duration: string | null
+          end_date: string | null
           google_form_url: string | null
           id: string
           image_url: string | null
+          location: string | null
           max_participants: number | null
           name: string
           requirements: string | null
-          start_date: string
+          schedule: string | null
+          start_date: string | null
           updated_at: string
         }
         Insert: {
@@ -334,14 +337,17 @@ export type Database = {
           created_at?: string
           current_participants?: number | null
           description?: string | null
-          end_date: string
+          duration?: string | null
+          end_date?: string | null
           google_form_url?: string | null
           id?: string
           image_url?: string | null
+          location?: string | null
           max_participants?: number | null
           name: string
           requirements?: string | null
-          start_date: string
+          schedule?: string | null
+          start_date?: string | null
           updated_at?: string
         }
         Update: {
@@ -350,14 +356,17 @@ export type Database = {
           created_at?: string
           current_participants?: number | null
           description?: string | null
-          end_date?: string
+          duration?: string | null
+          end_date?: string | null
           google_form_url?: string | null
           id?: string
           image_url?: string | null
+          location?: string | null
           max_participants?: number | null
           name?: string
           requirements?: string | null
-          start_date?: string
+          schedule?: string | null
+          start_date?: string | null
           updated_at?: string
         }
         Relationships: []

@@ -65,9 +65,10 @@ const ProgramList = ({ programs, onEdit, onDelete, loading }: ProgramListProps) 
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{program.description}</p>
                     <div className="text-sm text-gray-500">
-                      <p>Tanggal: {new Date(program.start_date).toLocaleDateString('id-ID')} - {new Date(program.end_date).toLocaleDateString('id-ID')}</p>
-                      <p>Maksimal Peserta: {program.max_participants}</p>
-                      <p>Peserta Saat Ini: {program.current_participants || 0}</p>
+                      {program.duration && <p>Durasi: {program.duration}</p>}
+                      {program.schedule && <p>Jadwal: {program.schedule}</p>}
+                      {program.location && <p>Lokasi: {program.location}</p>}
+                      <p>{program.max_participants || 0} peserta</p>
                     </div>
                     {program.google_form_url && (
                       <p className="text-sm text-blue-600 mt-1">
