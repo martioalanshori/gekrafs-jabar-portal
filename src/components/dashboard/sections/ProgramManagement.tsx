@@ -28,9 +28,10 @@ const ProgramManagement = () => {
     const programData = {
       name: formData.name,
       description: formData.description,
-      start_date: formData.start_date,
-      end_date: formData.end_date,
-      max_participants: parseInt(formData.max_participants) || 50,
+      duration: formData.duration,
+      schedule: formData.schedule,
+      location: formData.location,
+      max_participants: parseInt(formData.max_participants) || 30,
       image_url: formData.image_url,
       google_form_url: formData.google_form_url,
       benefits: formData.benefits,

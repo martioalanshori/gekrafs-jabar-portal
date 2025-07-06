@@ -7,8 +7,9 @@ import { Program } from '@/types/database';
 interface ProgramFormData {
   name: string;
   description: string;
-  start_date: string;
-  end_date: string;
+  duration: string;
+  schedule: string;
+  location: string;
   max_participants: string;
   image_url: string;
   google_form_url: string;
@@ -28,9 +29,10 @@ const ProgramForm = ({ editingProgram, onSubmit, onCancel, isSubmitting }: Progr
   const [formData, setFormData] = useState<ProgramFormData>({
     name: editingProgram?.name || '',
     description: editingProgram?.description || '',
-    start_date: editingProgram?.start_date || '',
-    end_date: editingProgram?.end_date || '',
-    max_participants: editingProgram?.max_participants?.toString() || '50',
+    duration: '',
+    schedule: '',
+    location: '',
+    max_participants: editingProgram?.max_participants?.toString() || '30',
     image_url: editingProgram?.image_url || '',
     google_form_url: editingProgram?.google_form_url || '',
     benefits: editingProgram?.benefits || '',
@@ -89,30 +91,30 @@ const ProgramForm = ({ editingProgram, onSubmit, onCancel, isSubmitting }: Progr
         className="min-h-20"
       />
       
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Tanggal Mulai</label>
-          <Input
-            type="date"
-            value={formData.start_date}
-            onChange={(e) => updateField('start_date', e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Tanggal Selesai</label>
-          <Input
-            type="date"
-            value={formData.end_date}
-            onChange={(e) => updateField('end_date', e.target.value)}
-            required
-          />
-        </div>
-      </div>
+      <Input
+        placeholder="Durasi Program (contoh: 3 bulan)"
+        value={formData.duration}
+        onChange={(e) => updateField('duration', e.target.value)}
+        required
+      />
+      
+      <Input
+        placeholder="Jadwal (contoh: Hari Sabtu, 09:00 - 16:00 WIB)"
+        value={formData.schedule}
+        onChange={(e) => updateField('schedule', e.target.value)}
+        required
+      />
+      
+      <Input
+        placeholder="Lokasi (contoh: Kampus Universitas Padjadjaran)"
+        value={formData.location}
+        onChange={(e) => updateField('location', e.target.value)}
+        required
+      />
       
       <Input
         type="number"
-        placeholder="Maksimal Peserta"
+        placeholder="Jumlah Peserta"
         value={formData.max_participants}
         onChange={(e) => updateField('max_participants', e.target.value)}
         min="1"
