@@ -8,6 +8,7 @@ import ArticleManagement from "@/components/dashboard/ArticleManagement";
 import ProductManagement from "@/components/dashboard/ProductManagement";
 import ContactMessagesManagement from "@/components/dashboard/ContactMessagesManagement";
 import CommentsManagement from "@/components/dashboard/CommentsManagement";
+import UserManagement from "@/components/dashboard/UserManagement";
 import ProgramManagement from "@/components/dashboard/sections/ProgramManagement";
 import ProfileSection from "@/components/dashboard/sections/ProfileSection";
 import OrderManagement from "@/components/dashboard/sections/OrderManagement";
@@ -236,6 +237,9 @@ const Dashboard = () => {
       
       case 'program-registrations':
         return isSuperAdmin ? <ProgramRegistrations /> : <div>Tidak memiliki akses</div>;
+      
+      case 'user-management':
+        return isSuperAdmin ? <UserManagement /> : <div>Tidak memiliki akses</div>;
       
       case 'contacts':
         return isSuperAdmin ? <ContactMessagesManagement /> : <div>Tidak memiliki akses</div>;

@@ -62,6 +62,7 @@ const DashboardSidebar = ({ activeSection, onSectionChange }: DashboardSidebarPr
     { id: 'comments', label: 'Moderasi Komentar', icon: MessageSquare, roles: ['super_admin', 'admin_artikel'] },
     { id: 'programs', label: 'Kelola Program', icon: Calendar, roles: ['super_admin'] },
     { id: 'program-registrations', label: 'Pendaftar Program', icon: Users, roles: ['super_admin'] },
+    { id: 'user-management', label: 'Kelola Pengguna', icon: User, roles: ['super_admin'] },
     { id: 'contacts', label: 'Booking Meeting', icon: Phone, roles: ['super_admin'] },
   ];
 
