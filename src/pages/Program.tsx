@@ -115,22 +115,28 @@ const Program = () => {
                     
                     <CardContent className="space-y-6">
                       {/* Program Details */}
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div className="flex items-center space-x-2">
-                          <Calendar className="h-4 w-4 text-gray-500" />
-                          <span>{new Date(program.start_date).toLocaleDateString('id-ID')}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Calendar className="h-4 w-4 text-gray-500" />
-                          <span>{new Date(program.end_date).toLocaleDateString('id-ID')}</span>
-                        </div>
+                      <div className="space-y-3 text-sm">
+                        {program.duration && (
+                          <div className="flex items-center space-x-2">
+                            <Clock className="h-4 w-4 text-gray-500" />
+                            <span>{program.duration}</span>
+                          </div>
+                        )}
+                        {program.schedule && (
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="h-4 w-4 text-gray-500" />
+                            <span>{program.schedule}</span>
+                          </div>
+                        )}
+                        {program.location && (
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="h-4 w-4 text-gray-500" />
+                            <span>{program.location}</span>
+                          </div>
+                        )}
                         <div className="flex items-center space-x-2">
                           <Users className="h-4 w-4 text-gray-500" />
-                          <span>Maks {program.max_participants} peserta</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Users className="h-4 w-4 text-gray-500" />
-                          <span>{program.current_participants || 0} terdaftar</span>
+                          <span>{program.max_participants || 0} peserta</span>
                         </div>
                       </div>
 
