@@ -20,7 +20,8 @@ import {
   Settings,
   ShoppingCart,
   Users,
-  BookOpen
+  BookOpen,
+  Phone
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -58,9 +59,10 @@ const DashboardSidebar = ({ activeSection, onSectionChange }: DashboardSidebarPr
     { id: 'orders', label: 'Pesanan & Checkout', icon: ShoppingCart, roles: ['super_admin', 'seller'] },
     { id: 'articles', label: 'Kelola Artikel', icon: FileText, roles: ['super_admin', 'admin_artikel'] },
     { id: 'article-management', label: 'Manajemen Artikel', icon: BookOpen, roles: ['super_admin', 'admin_artikel'] },
+    { id: 'comments', label: 'Moderasi Komentar', icon: MessageSquare, roles: ['super_admin', 'admin_artikel'] },
     { id: 'programs', label: 'Kelola Program', icon: Calendar, roles: ['super_admin'] },
     { id: 'program-registrations', label: 'Pendaftar Program', icon: Users, roles: ['super_admin'] },
-    { id: 'contacts', label: 'Booking Meeting', icon: MessageSquare, roles: ['super_admin'] },
+    { id: 'contacts', label: 'Booking Meeting', icon: Phone, roles: ['super_admin'] },
   ];
 
   const userRole = profile?.role || 'anggota_biasa';

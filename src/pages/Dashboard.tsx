@@ -7,6 +7,7 @@ import DashboardCharts from "@/components/dashboard/DashboardCharts";
 import ArticleManagement from "@/components/dashboard/ArticleManagement";
 import ProductManagement from "@/components/dashboard/ProductManagement";
 import ContactMessagesManagement from "@/components/dashboard/ContactMessagesManagement";
+import CommentsManagement from "@/components/dashboard/CommentsManagement";
 import ProgramManagement from "@/components/dashboard/sections/ProgramManagement";
 import ProfileSection from "@/components/dashboard/sections/ProfileSection";
 import OrderManagement from "@/components/dashboard/sections/OrderManagement";
@@ -220,6 +221,9 @@ const Dashboard = () => {
       case 'articles':
       case 'article-management':
         return canManageArticles ? <ArticleManagement /> : <div>Tidak memiliki akses</div>;
+      
+      case 'comments':
+        return canManageArticles ? <CommentsManagement /> : <div>Tidak memiliki akses</div>;
       
       case 'products':
         return canManageProducts ? <ProductManagement /> : <div>Tidak memiliki akses</div>;
