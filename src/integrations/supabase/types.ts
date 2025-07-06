@@ -51,6 +51,47 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          approved: boolean | null
+          article_id: string
+          comment: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          user_id: string | null
+        }
+        Insert: {
+          approved?: boolean | null
+          article_id: string
+          comment: string
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          user_id?: string | null
+        }
+        Update: {
+          approved?: boolean | null
+          article_id?: string
+          comment?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           created_at: string | null
