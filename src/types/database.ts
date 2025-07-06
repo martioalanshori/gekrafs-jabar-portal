@@ -80,3 +80,16 @@ export interface ProgramRegistration {
   status: string;
   created_at?: string;
 }
+
+export interface Program {
+  id: string;
+  name: string;
+  description?: string | null;
+  start_date: string;
+  end_date: string;
+  max_participants: number | null;
+  current_participants: number | null;
+  active: boolean | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}

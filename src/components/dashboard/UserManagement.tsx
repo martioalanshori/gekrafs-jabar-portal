@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Search, Edit2, UserCheck, UserX } from 'lucide-react';
+import { Users, Search, Edit2, UserCheck, UserX, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   Table,
@@ -88,6 +88,35 @@ const UserManagement = () => {
       toast({
         title: "Error",
         description: "Gagal mengubah role pengguna",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteUser = async (userId: string) => {
+    if (!window.confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      setProfiles(profiles.filter(profile => profile.id !== userId));
+
+      toast({
+        title: "Berhasil",
+        description: "Pengguna berhasil dihapus",
+      });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast({
+        title: "Error",
+        description: "Gagal menghapus pengguna",
         variant: "destructive",
       });
     }
@@ -236,21 +265,31 @@ const UserManagement = () => {
                         {new Date(profile.created_at).toLocaleDateString('id-ID')}
                       </TableCell>
                       <TableCell>
-                        <Select
-                          value={profile.role || 'anggota_biasa'}
-                          onValueChange={(newRole) => updateUserRole(profile.id, newRole)}
-                        >
-                          <SelectTrigger className="w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {roles.map(role => (
-                              <SelectItem key={role.value} value={role.value}>
-                                {role.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="flex items-center space-x-2">
+                          <Select
+                            value={profile.role || 'anggota_biasa'}
+                            onValueChange={(newRole) => updateUserRole(profile.id, newRole)}
+                          >
+                            <SelectTrigger className="w-36">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {roles.map(role => (
+                                <SelectItem key={role.value} value={role.value}>
+                                  {role.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => deleteUser(profile.id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar, Users, Eye, Plus, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ProgramRegistration } from '@/types/database';
+import { ProgramRegistration, Program } from '@/types/database';
 import {
   Dialog,
   DialogContent,
@@ -17,16 +17,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-interface Program {
-  id: string;
-  name: string;
-  description: string;
-  start_date: string;
-  end_date: string;
-  max_participants: number;
-  active: boolean;
-  created_at: string;
-}
 
 const ProgramManagement = () => {
   const [registrations, setRegistrations] = useState<ProgramRegistration[]>([]);
@@ -62,9 +52,13 @@ const ProgramManagement = () => {
 
   const fetchPrograms = async () => {
     try {
-      // Since we don't have a programs table yet, we'll create mock data
-      // In a real implementation, this would fetch from a programs table
-      setPrograms([]);
+      const { data, error } = await supabase
+        .from('programs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPrograms(data as Program[] || []);
     } catch (error) {
       console.error('Error fetching programs:', error);
       toast.error('Gagal memuat data program');
@@ -141,6 +135,79 @@ const ProgramManagement = () => {
     setEditingProgram(null);
   };
 
+  const saveProgram = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const programData = {
+        name: programFormData.name,
+        description: programFormData.description,
+        start_date: programFormData.start_date,
+        end_date: programFormData.end_date,
+        max_participants: parseInt(programFormData.max_participants) || 50,
+        active: programFormData.active,
+      };
+
+      if (editingProgram) {
+        const { error } = await supabase
+          .from('programs')
+          .update(programData)
+          .eq('id', editingProgram.id);
+        
+        if (error) throw error;
+        toast.success('Program berhasil diperbarui');
+      } else {
+        const { error } = await supabase
+          .from('programs')
+          .insert([programData]);
+        
+        if (error) throw error;
+        toast.success('Program berhasil dibuat');
+      }
+
+      setIsProgramDialogOpen(false);
+      resetProgramForm();
+      fetchPrograms();
+    } catch (error) {
+      console.error('Error saving program:', error);
+      toast.error('Gagal menyimpan program');
+    }
+  };
+
+  const editProgram = (program: Program) => {
+    setEditingProgram(program);
+    setProgramFormData({
+      name: program.name,
+      description: program.description || '',
+      start_date: program.start_date,
+      end_date: program.end_date,
+      max_participants: program.max_participants?.toString() || '50',
+      active: program.active
+    });
+    setIsProgramDialogOpen(true);
+  };
+
+  const deleteProgram = async (programId: string) => {
+    if (!window.confirm('Apakah Anda yakin ingin menghapus program ini?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('programs')
+        .delete()
+        .eq('id', programId);
+
+      if (error) throw error;
+      
+      toast.success('Program berhasil dihapus');
+      fetchPrograms();
+    } catch (error) {
+      console.error('Error deleting program:', error);
+      toast.error('Gagal menghapus program');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -170,7 +237,7 @@ const ProgramManagement = () => {
                 {editingProgram ? 'Edit Program' : 'Buat Program Baru'}
               </DialogTitle>
             </DialogHeader>
-            <form className="space-y-4">
+            <form onSubmit={saveProgram} className="space-y-4">
               <Input
                 placeholder="Nama Program"
                 value={programFormData.name}
@@ -236,10 +303,69 @@ const ProgramManagement = () => {
         </Dialog>
       </div>
       
+      {/* Programs List */}
       <Card className="hover-lift smooth-transition">
         <CardHeader>
           <CardTitle className="flex items-center">
             <Calendar className="h-5 w-5 mr-2" />
+            Daftar Program
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {programs.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>Belum ada program yang dibuat</p>
+                <p className="text-sm mt-2">Klik "Buat Program Baru" untuk membuat program pertama</p>
+              </div>
+            ) : (
+              programs.map((program) => (
+                <div key={program.id} className="border rounded-lg p-4 hover:bg-gray-50 smooth-transition">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <h3 className="font-medium">{program.name}</h3>
+                        <Badge className={program.active ? 'bg-green-500' : 'bg-gray-500'}>
+                          {program.active ? 'Aktif' : 'Tidak Aktif'}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">{program.description}</p>
+                      <div className="text-sm text-gray-500">
+                        <p>Tanggal: {new Date(program.start_date).toLocaleDateString('id-ID')} - {new Date(program.end_date).toLocaleDateString('id-ID')}</p>
+                        <p>Maksimal Peserta: {program.max_participants}</p>
+                        <p>Peserta Saat Ini: {program.current_participants || 0}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => editProgram(program)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteProgram(program.id)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Program Registrations */}
+      <Card className="hover-lift smooth-transition">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Users className="h-5 w-5 mr-2" />
             Pendaftaran Program
           </CardTitle>
         </CardHeader>

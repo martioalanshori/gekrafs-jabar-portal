@@ -10,89 +10,45 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Product } from "@/types/database";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const Ecommerce = () => {
-  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<{[key: string]: number}>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const { user } = useAuth();
 
-  // Data dummy produk
-  const dummyProducts: Product[] = [
-    {
-      id: "1",
-      name: "Kerajinan Tangan Tradisional",
-      description: "Kerajinan tangan buatan mahasiswa dengan sentuhan tradisional modern yang indah dan berkualitas tinggi",
-      price: 150000,
-      image_url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      seller_id: "1",
-      category: "Kerajinan",
-      stock: 10,
-      active: true
-    },
-    {
-      id: "2", 
-      name: "Tas Rajut Handmade",
-      description: "Tas rajut berkualitas tinggi dengan desain unik dan fungsional, cocok untuk sehari-hari",
-      price: 85000,
-      image_url: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      seller_id: "1",
-      category: "Fashion",
-      stock: 15,
-      active: true
-    },
-    {
-      id: "3",
-      name: "Lukisan Canvas Modern",
-      description: "Lukisan canvas dengan tema modern minimalis cocok untuk dekorasi rumah atau kantor",
-      price: 200000,
-      image_url: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      seller_id: "1", 
-      category: "Seni",
-      stock: 5,
-      active: true
-    },
-    {
-      id: "4",
-      name: "Batik Modern Jabar",
-      description: "Kain batik dengan motif khas Jawa Barat yang dipadukan dengan desain modern",
-      price: 120000,
-      image_url: "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      seller_id: "1",
-      category: "Fashion",
-      stock: 20,
-      active: true
-    },
-    {
-      id: "5",
-      name: "Produk Organik Lokal",
-      description: "Produk makanan organik hasil pertanian lokal Jawa Barat yang sehat dan bergizi",
-      price: 45000,
-      image_url: "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      seller_id: "1",
-      category: "Makanan",
-      stock: 30,
-      active: true
-    },
-    {
-      id: "6",
-      name: "Aksesoris Unik Handmade",
-      description: "Aksesoris unik buatan tangan dengan bahan berkualitas dan desain yang menarik",
-      price: 75000,
-      image_url: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      seller_id: "1",
-      category: "Aksesoris",
-      stock: 12,
-      active: true
-    }
-  ];
+  // Fetch products from Supabase
+  const { data: products = [], isLoading, error } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('active', true)
+        .order('created_at', { ascending: false });
 
-  const categories = ["All", "Kerajinan", "Fashion", "Seni", "Makanan", "Aksesoris"];
+      if (error) throw error;
+      return data as Product[];
+    },
+  });
 
+  // Get unique categories from products
+  const categories = ["All", ...Array.from(new Set(products?.map(p => p.category).filter(Boolean)))];
+
+  // Load cart from localStorage
   useEffect(() => {
-    setProducts(dummyProducts);
+    const savedCart = localStorage.getItem('gekrafs-cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
   }, []);
+
+  // Save cart to localStorage
+  useEffect(() => {
+    localStorage.setItem('gekrafs-cart', JSON.stringify(cart));
+  }, [cart]);
 
   const addToCart = (productId: string) => {
     setCart(prev => ({
@@ -122,8 +78,35 @@ const Ecommerce = () => {
                          product.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
     
-    return matchesSearch && matchesCategory && product.active;
+    return matchesSearch && matchesCategory;
   });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+        <Header />
+        <div className="pt-16 flex items-center justify-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+        <Header />
+        <div className="pt-16 flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Error loading products</p>
+            <p className="text-gray-600">{(error as Error).message}</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">

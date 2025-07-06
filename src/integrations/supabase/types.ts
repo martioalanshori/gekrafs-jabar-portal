@@ -311,6 +311,45 @@ export type Database = {
         }
         Relationships: []
       }
+      programs: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          current_participants: number | null
+          description: string | null
+          end_date: string
+          id: string
+          max_participants: number | null
+          name: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          current_participants?: number | null
+          description?: string | null
+          end_date: string
+          id?: string
+          max_participants?: number | null
+          name: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          current_participants?: number | null
+          description?: string | null
+          end_date?: string
+          id?: string
+          max_participants?: number | null
+          name?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
