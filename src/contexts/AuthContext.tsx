@@ -11,7 +11,7 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, metadata: { full_name: string; campus: string; role: string }) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, metadata: { full_name: string; role: string; campus?: string }) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -162,14 +162,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Don't set loading to false here, let the auth state change handle it
   };
 
-  const signUp = async (email: string, password: string, metadata: { full_name: string; campus: string; role: string }) => {
+  const signUp = async (email: string, password: string, metadata: { full_name: string; role: string; campus?: string }) => {
     // Input validation and sanitization
     const sanitizedEmail = sanitizeInput(email).toLowerCase();
     const sanitizedFullName = sanitizeInput(metadata.full_name);
-    const sanitizedCampus = sanitizeInput(metadata.campus);
+    const sanitizedCampus = metadata.campus ? sanitizeInput(metadata.campus) : undefined;
     const sanitizedRole = sanitizeInput(metadata.role);
 
-    if (!sanitizedEmail || !password || !sanitizedFullName || !sanitizedCampus) {
+    if (!sanitizedEmail || !password || !sanitizedFullName) {
       return { error: { message: 'Semua field harus diisi' } };
     }
 
@@ -197,10 +197,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: sanitizedFullName,
-            campus: sanitizedCampus,
-            role: sanitizedRole, // This will always be 'anggota_biasa'
-          }
-        }
+            ...(sanitizedCampus ? { campus: sanitizedCampus } : {}),
+            role: sanitizedRole,
+          },
+        },
       });
       return { error };
     } catch (error) {

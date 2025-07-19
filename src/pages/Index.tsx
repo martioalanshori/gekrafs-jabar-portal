@@ -2,72 +2,47 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { GraduationCap, Users, Target, Eye, ChevronLeft, ChevronRight, Phone } from "lucide-react";
+import { Monitor, Wrench, ShoppingCart, Users, BookOpen, Laptop, Video, TrendingUp, ChevronLeft, ChevronRight, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CampusSlider from "@/components/CampusSlider";
+import LogoSlider from "@/components/LogoSlider";
 import OrganizationStats from "@/components/OrganizationStats";
 import GoogleMapsSection from "@/components/GoogleMapsSection";
+import { supabase } from "@/integrations/supabase/client";
+import DynamicMetaTags from "@/components/DynamicMetaTags";
 
 const Index = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  // Data dummy artikel
-  const dummyArticles = [
-    {
-      id: 1,
-      title: "Inovasi Mahasiswa GEKRAFS dalam Bidang Teknologi",
-      excerpt: "Mahasiswa GEKRAFS menciptakan aplikasi inovatif untuk membantu UMKM lokal dalam digitalisasi bisnis mereka...",
-      image_url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      category: "Teknologi"
-    },
-    {
-      id: 2,
-      title: "Workshop Kewirausahaan: Membangun Startup dari Kampus",
-      excerpt: "Event workshop kewirausahaan yang diselenggarakan GEKRAFS berhasil menarik lebih dari 200 mahasiswa...",
-      image_url: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      category: "Kewirausahaan"
-    },
-    {
-      id: 3,
-      title: "Festival Ekonomi Kreatif Jawa Barat 2024",
-      excerpt: "GEKRAFS Jawa Barat menyelenggarakan festival ekonomi kreatif tahunan yang menampilkan karya-karya inovatif mahasiswa...",
-      image_url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      category: "Event"
-    },
-    {
-      id: 4,
-      title: "Program Beasiswa GEKRAFS untuk Mahasiswa Berprestasi",
-      excerpt: "GEKRAFS membuka program beasiswa untuk mahasiswa berprestasi dengan latar belakang ekonomi kurang mampu...",
-      image_url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      category: "Beasiswa"
-    },
-    {
-      id: 5,
-      title: "Kolaborasi GEKRAFS dengan Pemerintah Daerah",
-      excerpt: "Kerjasama strategis GEKRAFS dengan Pemerintah Provinsi Jawa Barat dalam pengembangan ekonomi kreatif...",
-      image_url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      category: "Kerjasama"
-    },
-    {
-      id: 6,
-      title: "Pelatihan Leadership untuk Pengurus GEKRAFS",
-      excerpt: "Program pelatihan kepemimpinan intensif untuk meningkatkan kapasitas pengurus GEKRAFS di seluruh Jawa Barat...",
-      image_url: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      category: "Leadership"
-    }
-  ];
-
-  const totalSlides = Math.ceil(dummyArticles.length / 3);
+  const [articles, setArticles] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
+    Promise.all([
+      supabase.from('articles').select('*').eq('published', true).order('created_at', { ascending: false }).limit(6),
+      supabase.from('products').select('*').eq('active', true).order('created_at', { ascending: false }).limit(6)
+    ]).then(([articlesRes, productsRes]) => {
+      if (articlesRes.error) setError(articlesRes.error.message);
+      else setArticles(articlesRes.data || []);
+      if (productsRes.error) setError(productsRes.error.message);
+      else setProducts(productsRes.data || []);
+      setLoading(false);
+    });
+  }, []);
+
+  const totalSlides = Math.ceil(articles.length / 3);
+
+  useEffect(() => {
+    if (articles.length === 0) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % totalSlides);
     }, 3000);
-
     return () => clearInterval(timer);
-  }, [totalSlides]);
+  }, [totalSlides, articles.length]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -80,15 +55,45 @@ const Index = () => {
   const getSlideArticles = () => {
     const articlesPerSlide = 3;
     const start = currentSlide * articlesPerSlide;
-    return dummyArticles.slice(start, start + articlesPerSlide);
+    return articles.slice(start, start + articlesPerSlide);
   };
+
+  // Data testimoni vendor
+  const testimonials = [
+    {
+      id: 1,
+      name: "Avip Firmansyah",
+      company: "Dewan Pengarah",
+      photo: "https://randomuser.me/api/portraits/men/32.jpg",
+      testimonial: "GEKRAFS Jawa Barat adalah manifestasi dari semangat anak muda yang ingin berkontribusi nyata bagi bangsa. Melalui ekonomi kreatif, kita tidak hanya menciptakan peluang ekonomi, tetapi juga membangun karakter generasi yang inovatif dan berjiwa entrepreneur.",
+    },
+    {
+      id: 2,
+      name: "Ervin Luthfi",
+      company: "Dewan Pengarah",
+      photo: "https://randomuser.me/api/portraits/men/22.jpg",
+      testimonial: "GEKRAFS Jawa Barat menjadi wadah kolaboratif bagi para pemuda untuk menyalurkan ide dan kreativitasnya. Lewat ekonomi kreatif, kita tidak hanya membentuk ekosistem industri yang berdaya saing, tetapi juga mendorong lahirnya talenta-talenta muda yang visioner dan berdampak bagi masa depan bangsa.",
+    },
+    {
+      id: 3,
+      name: "Dodi Gustari",
+      company: "Dewan Pengarah",
+      photo: "https://randomuser.me/api/portraits/men/65.jpg",
+      testimonial: "GEKRAFS Jawa Barat adalah ruang tumbuh bagi generasi muda untuk berkarya dan berinovasi, menjadikan kreativitas sebagai kekuatan pembangunan bangsa."
+    }
+  ];
 
   return (
     <div className="min-h-screen">
+      <DynamicMetaTags 
+        title="GEKRAFS Kampus Jawa Barat - Organisasi Mahasiswa Kreatif"
+        description="Gerakan Ekonomi Kreatif Mahasiswa Kampus Jawa Barat. Wadah mahasiswa untuk berkolaborasi, kreativitas, dan inovasi untuk masa depan yang lebih baik."
+        image="/assets/img/gekrafslogo.png"
+        type="website"
+      />
       <Header />
-      
-      {/* Hero Section */}
-      <section className="pt-24 sm:pt-28 lg:pt-32 bg-gradient-to-br from-blue-50 via-white to-green-50 py-8 sm:py-12 lg:py-16">
+     {/* Hero Section */}
+     <section className="pt-24 sm:pt-28 lg:pt-32 bg-gradient-to-br from-blue-50 via-white to-green-50 py-8 sm:py-12 lg:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Image - Shows first on mobile, second on desktop */}
@@ -132,58 +137,55 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Campus Slider */}
-      <CampusSlider />
+            {/* Logo Slider */}
+            <LogoSlider/>
+
+<OrganizationStats/>
 
       {/* Vision Mission Section */}
       <section className="py-12 sm:py-16 lg:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4 sm:mb-6">
-              Visi & Misi Kami
+              Visi & Misi Perusahaan
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600">Membangun masa depan yang lebih baik melalui kolaborasi dan inovasi</p>
+            <p className="text-lg sm:text-xl text-gray-600">Menjadi pusat solusi IT dan pelatihan komputer terbaik di Cianjur</p>
           </div>
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="grid gap-6 sm:gap-8">
               <Card className="shadow-xl border-0 bg-gradient-to-br from-blue-50 to-white hover-lift smooth-transition">
                 <CardHeader className="text-center pb-4 sm:pb-6">
                   <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center smooth-transition hover:scale-110">
-                    <Eye className="h-8 w-8 text-white" />
+                    <TrendingUp className="h-8 w-8 text-white" />
                   </div>
                   <CardTitle className="text-xl sm:text-2xl text-blue-800">Visi</CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 sm:px-6">
                   <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                    Menjadi organisasi mahasiswa terdepan di Jawa Barat yang menginspirasi generasi muda 
-                    untuk berkreasi, berinovasi, dan berkontribusi nyata bagi kemajuan bangsa melalui 
-                    kolaborasi lintas kampus yang solid dan berkelanjutan.
-                  </p>
+                  Menjadi organisasi mahasiswa terdepan di Jawa Barat yang menginspirasi generasi muda untuk berkreasi, berinovasi, dan berkontribusi nyata bagi kemajuan bangsa melalui kolaborasi lintas kampus yang solid dan berkelanjutan.                  </p>
                 </CardContent>
               </Card>
-
               <Card className="shadow-xl border-0 bg-gradient-to-br from-green-50 to-white hover-lift smooth-transition">
                 <CardHeader className="text-center pb-4 sm:pb-6">
                   <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center smooth-transition hover:scale-110">
-                    <Target className="h-8 w-8 text-white" />
+                    <Users className="h-8 w-8 text-white" />
                   </div>
                   <CardTitle className="text-xl sm:text-2xl text-green-800">Misi</CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 sm:px-6">
                   <ul className="space-y-2 sm:space-y-3 text-gray-700 text-sm sm:text-base">
-                    <li className="smooth-transition hover:translate-x-2">• Memfasilitasi pengembangan soft skill dan leadership mahasiswa</li>
-                    <li className="smooth-transition hover:translate-x-2">• Menciptakan ekosistem kolaborasi antar kampus di Jawa Barat</li>
-                    <li className="smooth-transition hover:translate-x-2">• Mengembangkan program-program inovatif dan berdampak sosial</li>
-                    <li className="smooth-transition hover:translate-x-2">• Membangun jaringan mahasiswa yang kuat dan saling mendukung</li>
+                    <li className="smooth-transition hover:translate-x-2">1. Memfasilitasi pengembangan soft skill dan leadership mahasiswa.</li>
+                    <li className="smooth-transition hover:translate-x-2">2. Menciptakan ekosistem kolaborasi antar kampus di Jawa Barat.</li>
+                    <li className="smooth-transition hover:translate-x-2">3. Mengembangkan program-program inovatif dan berdampak sosial.</li>
+                    <li className="smooth-transition hover:translate-x-2">4. Membangun jaringan mahasiswa yang kuat dan saling mendukung.</li>
                   </ul>
                 </CardContent>
               </Card>
             </div>
-            
             <div className="relative mt-8 lg:mt-0 animate-slide-in-right">
               <img
                 src="assets/img/ourvision.jpg"
-                alt="Foto Kepengurusan GEKRAFS"
+                alt="Toko GEKRAFS Kampus Jabar Cianjur"
                 className="rounded-2xl shadow-2xl w-full h-auto hover-lift smooth-transition"
               />
             </div>
@@ -191,217 +193,111 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Organization Stats */}
-      <OrganizationStats />
-
-      {/* Pembina Message Section */}
+      {/* Testimoni Vendor */}
       <section className="py-12 sm:py-16 bg-gradient-to-br from-blue-50 to-green-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 sm:mb-12 animate-fade-in-up">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4 sm:mb-6">
-              Sambutan dari Dewan Pembina
-            </h2>
-            
-            <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto">
-              {/* Pembina 1 */}
-              <Card className="shadow-xl border-0 bg-white hover-lift smooth-transition">
-                <CardContent className="p-6 sm:p-8">
-                  <div className="flex flex-col items-center mb-4 sm:mb-6">
-                    <img
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                      alt="Dr. Ahmad Fauzi"
-                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-3 sm:mb-4 smooth-transition hover:scale-110"
-                    />
-                    <h4 className="font-bold text-lg sm:text-xl text-gray-800 text-center">Dr. Ahmad Fauzi, M.Si</h4>
-                    <p className="text-gray-600 text-sm sm:text-base">Ketua Dewan Pembina</p>
-                  </div>
-                  <p className="text-base sm:text-lg text-gray-700 leading-relaxed italic text-center">
-                    "GEKRAFS Jawa Barat adalah manifestasi dari semangat anak muda yang ingin berkontribusi 
-                    nyata bagi bangsa. Melalui ekonomi kreatif, kita tidak hanya menciptakan peluang ekonomi, 
-                    tetapi juga membangun karakter generasi yang inovatif dan berjiwa entrepreneur."
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Pembina 2 */}
-              <Card className="shadow-xl border-0 bg-white hover-lift smooth-transition">
-                <CardContent className="p-6 sm:p-8">
-                  <div className="flex flex-col items-center mb-4 sm:mb-6">
-                    <img
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                      alt="Prof. Dr. Siti Nurhaliza"
-                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-3 sm:mb-4 smooth-transition hover:scale-110"
-                    />
-                    <h4 className="font-bold text-lg sm:text-xl text-gray-800 text-center">Prof. Dr. Siti Nurhaliza, M.Pd</h4>
-                    <p className="text-gray-600 text-sm sm:text-base">Anggota Dewan Pembina</p>
-                  </div>
-                  <p className="text-base sm:text-lg text-gray-700 leading-relaxed italic text-center">
-                    "Pendidikan karakter dan pengembangan soft skills menjadi kunci kesuksesan GEKRAFS. 
-                    Kami berkomitmen mendampingi mahasiswa untuk menjadi pemimpin masa depan yang berintegritas 
-                    dan peduli terhadap kemajuan bangsa."
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Sambutan Dewan Pengarah</h2>
+            <p className="text-lg sm:text-xl text-gray-600">Dewan Pengarah GEKRAFS Kampus Jawa Barat</p>
           </div>
-        </div>
-      </section>
-
-      {/* Programs Section */}
-      <section className="py-12 sm:py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 sm:mb-12 animate-fade-in-up">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Program Unggulan</h2>
-            <p className="text-lg sm:text-xl text-gray-600">Program-program inovatif untuk mengembangkan potensi mahasiswa</p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {[
-              {
-                title: "Leadership Development",
-                description: "Program pengembangan kepemimpinan dan soft skills untuk mahasiswa",
-                icon: Users,
-                color: "from-blue-500 to-blue-600"
-              },
-              {
-                title: "Entrepreneurship Workshop",
-                description: "Pelatihan kewirausahaan dan membangun startup dari kampus",
-                icon: Target,
-                color: "from-green-500 to-green-600"
-              },
-              {
-                title: "Creative Economy Festival",
-                description: "Festival tahunan yang menampilkan karya kreatif mahasiswa",
-                icon: GraduationCap,
-                color: "from-purple-500 to-purple-600"
-              }
-            ].map((program, index) => (
-              <Card key={index} className="shadow-lg hover:shadow-xl hover-lift smooth-transition border-0 bg-white">
-                <CardHeader className="text-center pb-4">
-                  <div className={`bg-gradient-to-r ${program.color} p-3 sm:p-4 rounded-full w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 flex items-center justify-center smooth-transition hover:scale-110`}>
-                    <program.icon className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
-                  </div>
-                  <CardTitle className="text-lg sm:text-xl">{program.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="px-4 sm:px-6">
-                  <p className="text-gray-600 text-center text-sm sm:text-base">{program.description}</p>
-                </CardContent>
-              </Card>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {testimonials.map((item) => (
+              <div key={item.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col p-6">
+                <img src={item.photo} alt={item.name} className="w-16 h-16 rounded-full mx-auto mb-3 object-cover" />
+                <h3 className="font-bold text-lg text-center">{item.name}</h3>
+                <p className="text-sky-600 text-sm text-center mb-1">{item.company}</p>
+                <p className="text-gray-700 text-sm text-center italic flex-1">"{item.testimonial}"</p>
+              </div>
             ))}
           </div>
-
-          <div className="text-center mt-8 sm:mt-12">
-            <Link to="/program">
-              <Button className="w-full sm:w-auto bg-gradient-to-r from-sky-600 to-yellow-600 hover:from-sky-700 hover:to-yellow-700 text-base sm:text-lg px-6 sm:px-8 py-3 hover-lift smooth-transition">
-                Lihat Semua Program
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
+
+      
 
       {/* Articles Slider Section */}
       <section className="py-12 sm:py-16 bg-gradient-to-br from-blue-50 to-green-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 sm:mb-12 animate-fade-in-up">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Artikel GEKRAFS</h2>
-            <p className="text-lg sm:text-xl text-gray-600">Berita dan informasi terbaru dari kegiatan kami</p>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Artikel dan Kegiatan</h2>
+            <p className="text-lg sm:text-xl text-gray-600">Dokumentasi berbagai artikel dan kegiatan yang telah kami laksanakan dengan sukses.</p>
           </div>
-
-          <div className="relative">
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-              {getSlideArticles().map((article, index) => (
-                <Card key={article.id} className="shadow-lg hover:shadow-xl hover-lift smooth-transition border-0 bg-white">
+          {loading ? (
+            <div className="text-center text-gray-500 py-12">Loading data dari database...</div>
+          ) : error ? (
+            <div className="text-center text-red-500 py-12">{error}</div>
+          ) : (
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {articles.map((item) => (
+                <div key={item.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col">
                   <div className="relative">
-                    <img 
-                      src={article.image_url} 
-                      alt={article.title}
-                      className="w-full h-40 sm:h-48 object-cover rounded-t-lg smooth-transition hover:scale-105"
+                    <img
+                      src={item.image_url || "/public/placeholder.svg"}
+                      alt={item.title}
+                      className="w-full h-40 object-cover"
                     />
-                    <Badge className="absolute top-2 sm:top-3 left-2 sm:left-3 text-xs sm:text-sm">{article.category}</Badge>
+                    <span className="absolute top-3 left-3 bg-sky-600 text-white text-xs px-3 py-1 rounded-full shadow">
+                      {item.category}
+                    </span>
                   </div>
-                  <CardHeader className="pb-2 sm:pb-4">
-                    <CardTitle className="text-base sm:text-lg line-clamp-2">{article.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-4 sm:px-6">
-                    <p className="text-gray-600 text-xs sm:text-sm line-clamp-3 mb-3 sm:mb-4">{article.excerpt}</p>
-                    <Button variant="outline" size="sm" className="w-full sm:w-auto hover-lift smooth-transition text-xs sm:text-sm">
-                      Baca Selengkapnya
-                    </Button>
-                  </CardContent>
-                </Card>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-bold text-lg mb-1">{item.title}</h3>
+                    <p className="text-gray-600 text-sm mb-4 flex-1">{item.excerpt || item.content?.slice(0, 100) + "..."}</p>
+                    <div className="flex items-center justify-between text-xs text-gray-400 mt-auto">
+                      <span>
+                        <svg className="inline-block mr-1" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="7"/><path d="M8 4v4l3 3"/></svg>
+                        {item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        }) : ""}
+                      </span>
+                      <span>
+                        <svg className="inline-block mr-1" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10.5a8.38 8.38 0 0 1-1.9 5.4L12 21l-7.1-5.1A8.38 8.38 0 0 1 3 10.5C3 6.36 6.36 3 10.5 3S18 6.36 18 10.5z"/><circle cx="12" cy="10.5" r="2.5"/></svg>
+                        {item.category}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-center items-center mt-6 sm:mt-8 space-x-3 sm:space-x-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={prevSlide}
-                className="p-2 hover-lift smooth-transition"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              
-              <div className="flex space-x-2">
-                {Array.from({ length: totalSlides }).map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full smooth-transition hover:scale-125 ${
-                      currentSlide === index ? 'bg-blue-600' : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={nextSlide}
-                className="p-2 hover-lift smooth-transition"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
+          )}
           <div className="text-center mt-8 sm:mt-12">
-            <Link to="/artikel">
-              <Button className="w-full sm:w-auto bg-gradient-to-r from-sky-600 to-yellow-600 hover:from-sky-700 hover:to-yellow-700 text-base sm:text-lg px-6 sm:px-8 py-3 hover-lift smooth-transition">
-                Lihat Semua Artikel
+            <Link to="/artikel" className="text-sky-600 hover:text-sky-800">
+              <Button className="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white text-base sm:text-lg px-6 sm:px-8 py-3 transition-all duration-300 ease-in-out">
+                Lihat Semua Galeri
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section 
+        className="py-16 sm:py-20 lg:py-24 relative bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("https://cdn0-production-images-kly.akamaized.net/6GmAl7WTROc8OOUlojkP_l9cqTw=/0x86:1600x987/800x450/filters:quality(75):strip_icc():format(webp)/kly-media-production/medias/4665617/original/086927100_1701140014-Ilustrasi_karyawan__bekerja__suasana_kantor.jpg")'
+        }}
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
+          Butuh Informasi Lebih Lanjut?
+          </h2>
+          <p className="text-xl sm:text-2xl text-white mb-6 sm:mb-8">
+          Jangan ragu untuk menghubungi kami!
+          </p>
+          <Link to="/contact" className="text-sky-600 hover:text-sky-800">
+          <Button className="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white text-base sm:text-lg px-6 sm:px-8 py-3 transition-all duration-300 ease-in-out">
+          <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+              Hubungi GEKRAFS Kampus Jabar
+            </Button>
+          </Link>
         </div>
       </section>
 
       {/* Google Maps Section */}
       <GoogleMapsSection />
 
-      {/* CTA Section */}
-      <section 
-        className="py-16 sm:py-20 lg:py-24 relative bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("assets/img/ourvision.jpg")'
-        }}
-      >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
-            Butuh Informasi Lebih Lanjut?
-          </h2>
-          <p className="text-xl sm:text-2xl text-white mb-6 sm:mb-8">
-            Jangan ragu untuk menghubungi kami!
-          </p>
-          <Link to="/contact">
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-sky-600 to-yellow-600 hover:from-sky-700 hover:to-yellow-700 text-lg sm:text-xl px-8 sm:px-12 py-3 sm:py-4">
-              <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-              Hubungi Kami
-            </Button>
-          </Link>
-        </div>
-      </section>
 
       <Footer />
     </div>

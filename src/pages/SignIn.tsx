@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Swal from 'sweetalert2';
 
 // Input validation utilities
 const validateEmail = (email: string) => {
@@ -42,7 +43,6 @@ const SignIn = () => {
     password: "",
     confirmPassword: "",
     fullName: "",
-    campus: "",
     role: "anggota_biasa"
   });
 
@@ -51,7 +51,7 @@ const SignIn = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [user, navigate]);
 
@@ -61,8 +61,6 @@ const SignIn = () => {
     // Use trimmed values for validation but don't modify the original formData
     const trimmedEmail = formData.email.trim();
     const trimmedFullName = formData.fullName.trim();
-    const trimmedCampus = formData.campus.trim();
-
     if (!validateEmail(trimmedEmail)) {
       newErrors.email = "Email tidak valid";
     }
@@ -74,10 +72,6 @@ const SignIn = () => {
     if (!isLogin) {
       if (!trimmedFullName) {
         newErrors.fullName = "Nama lengkap wajib diisi";
-      }
-
-      if (!trimmedCampus) {
-        newErrors.campus = "Kampus wajib diisi";
       }
 
       if (formData.password !== formData.confirmPassword) {
@@ -98,8 +92,8 @@ const SignIn = () => {
     if (name === 'email') {
       // For email, remove spaces and dangerous characters
       sanitizedValue = sanitizeInput(value, true);
-    } else if (name === 'fullName' || name === 'campus') {
-      // For name and campus fields, keep spaces but remove dangerous characters
+    } else if (name === 'fullName') {
+      // For name fields, keep spaces but remove dangerous characters
       sanitizedValue = sanitizeInput(value, false);
     } else {
       // For password fields, keep as is (passwords might need special characters)
@@ -130,37 +124,42 @@ const SignIn = () => {
       if (isLogin) {
         const { error } = await signIn(formData.email.trim(), formData.password);
         if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            setErrors({ general: 'Email atau password salah' });
-          } else if (error.message.includes('Email not confirmed')) {
-            setErrors({ general: 'Silakan konfirmasi email Anda terlebih dahulu' });
-          } else {
-            setErrors({ general: `Login gagal: ${error.message}` });
-          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Gagal',
+            text: error.message.includes('Invalid login credentials') ? 'Email atau password salah' : error.message.includes('Email not confirmed') ? 'Silakan konfirmasi email Anda terlebih dahulu' : `Login gagal: ${error.message}`,
+          });
         } else {
-          navigate('/dashboard');
+          navigate('/');
         }
       } else {
         const { error } = await signUp(formData.email.trim(), formData.password, {
           full_name: formData.fullName.trim(), // Trim only when submitting
-          campus: formData.campus.trim(), // Trim only when submitting
           role: formData.role
         });
         if (error) {
-          if (error.message.includes('User already registered')) {
-            setErrors({ general: 'Email sudah terdaftar. Silakan login.' });
-          } else {
-            setErrors({ general: `Registrasi gagal: ${error.message}` });
-          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Registrasi Gagal',
+            text: error.message.includes('User already registered') ? 'Email sudah terdaftar. Silakan login.' : `Registrasi gagal: ${error.message}`,
+          });
         } else {
-          alert("Registrasi berhasil! Silakan cek email Anda untuk konfirmasi.");
+          Swal.fire({
+            icon: 'success',
+            title: 'Registrasi Berhasil!',
+            text: 'Silakan cek email Anda untuk konfirmasi.',
+          });
           setIsLogin(true);
           setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
         }
       }
     } catch (error) {
       console.error('Auth error:', error);
-      setErrors({ general: 'Terjadi kesalahan. Silakan coba lagi.' });
+      Swal.fire({
+        icon: 'error',
+        title: 'Terjadi Kesalahan',
+        text: 'Silakan coba lagi.',
+      });
     } finally {
       setLoading(false);
     }
@@ -176,22 +175,18 @@ const SignIn = () => {
           <Card className="shadow-2xl border-0 bg-white">
             <CardHeader className="text-center pb-6 px-6 pt-8">
               <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <img src="/img/gekrafslogo.png" alt="GEKRAFS Logo" className="h-15 w-15" />
+                <img src="assets/img/gekrafslogo.png" alt="GEKRAFS Logo" className="h-15 w-15" />
               </div>
               <CardTitle className="text-2xl text-gray-800">
-                {isLogin ? "Masuk ke GEKRAFS" : "Daftar GEKRAFS"}
+                {isLogin ? "Masuk Akun" : "Daftar Akun"}
               </CardTitle>
               <p className="text-gray-600">
-                {isLogin ? "Masuk untuk mengakses dashboard" : "Bergabung dengan komunitas kreatif"}
+                {isLogin ? "Masuk untuk mengakses dashboard" : "Bergabung dengan Kami"}
               </p>
             </CardHeader>
             
             <CardContent className="px-6 pb-8">
-              {errors.general && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
-                  {errors.general}
-                </div>
-              )}
+              
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {!isLogin && (
@@ -210,22 +205,6 @@ const SignIn = () => {
                       />
                       {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
                     </div>
-                    
-                    <div>
-                      <Label htmlFor="campus">Kampus/Universitas</Label>
-                      <Input
-                        id="campus"
-                        name="campus"
-                        type="text"
-                        required={!isLogin}
-                        value={formData.campus}
-                        onChange={handleInputChange}
-                        className={`mt-1 ${errors.campus ? 'border-red-500' : ''}`}
-                        placeholder="Nama kampus/universitas"
-                      />
-                      {errors.campus && <p className="text-red-500 text-xs mt-1">{errors.campus}</p>}
-                    </div>
-                    
                     <div>
                       <Label htmlFor="role">Role</Label>
                       <Select value={formData.role} onValueChange={(value) => setFormData(prev => ({...prev, role: value}))}>
@@ -234,7 +213,6 @@ const SignIn = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="anggota_biasa">Member Biasa</SelectItem>
-                          {/* Removed super_admin option for security */}
                         </SelectContent>
                       </Select>
                     </div>
@@ -300,7 +278,7 @@ const SignIn = () => {
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-sky-600 to-yellow-600 hover:from-sky-700 hover:to-yellow-700 mt-6"
+                  className="w-full bg-sky-600 to-yellow-600 hover:from-sky-700 hover:to-yellow-700 mt-6"
                 >
                   {loading ? "Loading..." : (
                     isLogin ? (
@@ -345,8 +323,6 @@ const SignIn = () => {
           </Card>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 };

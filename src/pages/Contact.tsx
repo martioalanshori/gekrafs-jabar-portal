@@ -83,7 +83,7 @@ const Contact = () => {
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Punya pertanyaan atau ingin berkolaborasi? Jangan ragu untuk menghubungi kami. 
-              Tim GEKRAFS siap membantu Anda!
+              Tim GEKRAFS Kampus Jabar siap membantu Anda!
             </p>
           </div>
         </section>
@@ -139,8 +139,8 @@ const Contact = () => {
                     <div>
                       <h3 className="font-semibold text-gray-800 mb-1">Email</h3>
                       <p className="text-gray-600">
-                        info@gekrafs.org<br />
-                        contact@gekrafs.org
+                        gekrafskampusjabar@gmail.com<br />
+                        gekrafskampusjabar@gmail.com
                       </p>
                     </div>
                   </div>
@@ -225,7 +225,7 @@ const Contact = () => {
                     <Button 
                       type="submit" 
                       disabled={loading}
-                      className="w-full bg-gradient-to-r from-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700"
+                      className="w-full bg-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700"
                     >
                       {loading ? 'Mengirim...' : 'Kirim Pesan'}
                     </Button>

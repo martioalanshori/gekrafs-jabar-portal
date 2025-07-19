@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Mail, MessageSquare } from 'lucide-react';
+import { Eye, Mail, MessageSquare, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ContactMessage } from '@/types/database';
@@ -19,6 +18,7 @@ const ContactMessagesManagement = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [statusLoading, setStatusLoading] = useState<string | null>(null);
 
   const fetchMessages = async () => {
     try {
@@ -41,19 +41,26 @@ const ContactMessagesManagement = () => {
     fetchMessages();
   }, []);
 
-  const updateMessageStatus = async (id: string, status: string) => {
+  const updateMessageStatus = async (id: string, status: "new" | "read" | "replied" | "closed") => {
+    setStatusLoading(status);
+    // Optimistically update UI
+    setMessages((prev) => prev.map((msg) =>
+      msg.id === id ? { ...msg, status } as ContactMessage : msg
+    ));
+    if (selectedMessage && selectedMessage.id === id) {
+      setSelectedMessage({ ...selectedMessage, status } as ContactMessage);
+    }
     try {
       const { error } = await supabase
         .from('contact_messages')
         .update({ status })
         .eq('id', id);
-
       if (error) throw error;
       toast.success('Status pesan diperbarui');
-      fetchMessages();
     } catch (error) {
-      console.error('Error updating message status:', error);
       toast.error('Gagal memperbarui status pesan');
+    } finally {
+      setStatusLoading(null);
     }
   };
 
@@ -114,7 +121,7 @@ const ContactMessagesManagement = () => {
                   <p className="text-sm font-medium mt-1">{message.subject || 'No Subject'}</p>
                   <p className="text-sm text-gray-600 mt-1 line-clamp-1">{message.message}</p>
                   <p className="text-xs text-gray-400 mt-2">
-                    {message.created_at && new Date(message.created_at).toLocaleDateString('id-ID', {
+                    {message.created_at && new Date(message.created_at).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
@@ -164,8 +171,12 @@ const ContactMessagesManagement = () => {
                                   key={status}
                                   variant={selectedMessage.status === status ? "default" : "outline"}
                                   size="sm"
-                                  onClick={() => updateMessageStatus(selectedMessage.id, status)}
+                                  onClick={() => updateMessageStatus(selectedMessage.id, status as "new" | "read" | "replied" | "closed")}
+                                  disabled={statusLoading !== null}
                                 >
+                                  {statusLoading === status ? (
+                                    <Loader2 className="animate-spin h-4 w-4 mr-1" />
+                                  ) : null}
                                   {getStatusText(status)}
                                 </Button>
                               ))}

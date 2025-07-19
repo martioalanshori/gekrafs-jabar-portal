@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -54,14 +53,12 @@ const DashboardSidebar = ({ activeSection, onSectionChange }: DashboardSidebarPr
   console.log('Sidebar Debug - User Role:', profile?.role);
 
   const menuItems = [
-    { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, roles: ['super_admin', 'admin_artikel', 'seller', 'anggota_biasa'] },
+    { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, roles: ['super_admin', 'admin_artikel', 'seller'] },
     { id: 'products', label: 'Kelola Produk', icon: ShoppingBag, roles: ['super_admin', 'seller'] },
-    { id: 'orders', label: 'Pesanan & Checkout', icon: ShoppingCart, roles: ['super_admin', 'seller'] },
+    { id: 'orders', label: profile?.role === 'anggota_biasa' ? 'Pesanan Saya' : 'Semua Pesanan', icon: ShoppingCart, roles: ['super_admin', 'seller', 'anggota_biasa'] },
     { id: 'articles', label: 'Kelola Artikel', icon: FileText, roles: ['super_admin', 'admin_artikel'] },
-    { id: 'article-management', label: 'Manajemen Artikel', icon: BookOpen, roles: ['super_admin', 'admin_artikel'] },
     { id: 'comments', label: 'Moderasi Komentar', icon: MessageSquare, roles: ['super_admin', 'admin_artikel'] },
     { id: 'programs', label: 'Kelola Program', icon: Calendar, roles: ['super_admin'] },
-    { id: 'program-registrations', label: 'Pendaftar Program', icon: Users, roles: ['super_admin'] },
     { id: 'user-management', label: 'Kelola Pengguna', icon: User, roles: ['super_admin'] },
     { id: 'contacts', label: 'Booking Meeting', icon: Phone, roles: ['super_admin'] },
   ];
@@ -74,10 +71,10 @@ const DashboardSidebar = ({ activeSection, onSectionChange }: DashboardSidebarPr
   console.log('Filtered menu items:', filteredItems.map(item => item.label));
 
   return (
-    <div className="fixed left-0 top-0 z-40 w-64 bg-white shadow-lg h-screen flex flex-col border-r">
+    <div className="fixed left-0 top-0 z-40 w-64 bg-white shadow-lg h-screen flex flex-col border-r overflow-x-hidden">
       {/* Header */}
       <div className="p-6 border-b bg-blue-600 text-white">
-        <h1 className="text-xl font-bold">GEKRAFS Dashboard</h1>
+        <h1 className="text-xl font-bold">Dashboard GEKRAFS</h1>
       </div>
 
       {/* User Info */}
@@ -93,8 +90,11 @@ const DashboardSidebar = ({ activeSection, onSectionChange }: DashboardSidebarPr
             <div>
               <p className="font-medium text-sm text-gray-800">{profile?.full_name || user?.email || 'User'}</p>
               <p className="text-xs text-gray-500 capitalize">
-                {profile?.role?.replace('_', ' ') || 'Member'}
-                {user?.email === 'mar.tio9000@gmail.com' && ' (Super Admin)'}
+                {profile?.role === 'super_admin' ? 'Super Admin' : 
+                 profile?.role === 'admin_artikel' ? 'Admin Artikel' :
+                 profile?.role === 'seller' ? 'Seller' :
+                 profile?.role === 'anggota_biasa' ? 'Anggota Biasa' :
+                 'Member'}
               </p>
             </div>
           </div>
@@ -123,46 +123,58 @@ const DashboardSidebar = ({ activeSection, onSectionChange }: DashboardSidebarPr
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 overflow-y-auto">
+      <nav className="flex-1 p-4 overflow-hidden">
         <ul className="space-y-2">
-          {filteredItems.map((item) => {
+          <li className="mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider pl-2">Menu Utama</li>
+          {filteredItems.map((item, idx) => {
             const Icon = item.icon;
+            // Section separator untuk admin
+            const isAdminSection = idx > 0 && filteredItems[idx-1].roles[0] !== item.roles[0];
             return (
-              <li key={item.id}>
-                <button
-                  onClick={() => onSectionChange(item.id)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left smooth-transition hover:scale-105 ${
-                    activeSection === item.id
-                      ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-600 shadow-md animate-scale-in'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
-                  }`}
-                >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
-                  <span className="font-medium">{item.label}</span>
-                </button>
-              </li>
+              <>
+                {isAdminSection && (
+                  <li className="mt-4 mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider pl-2">Admin</li>
+                )}
+                <li key={item.id}>
+                  <button
+                    onClick={() => onSectionChange(item.id)}
+                    title={item.label}
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left smooth-transition hover:scale-105 group relative transition-all duration-200
+                      ${activeSection === item.id
+                        ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-600 shadow-md animate-scale-in'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'}
+                    `}
+                  >
+                    <Icon className={`h-5 w-5 flex-shrink-0 transition-all duration-200 ${activeSection === item.id ? 'scale-125 text-blue-600' : ''}`} />
+                    <span className="font-medium">{item.label}</span>
+                    {/* Contoh badge fitur baru */}
+                    {item.id === 'orders' && (
+                      <span className="ml-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5 animate-bounce" style={{ display: 'none' }}>Baru</span>
+                    )}
+                    {/* Tooltip custom */}
+                    <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 z-50 whitespace-nowrap">
+                      {item.label}
+                    </span>
+                  </button>
+                </li>
+              </>
             );
           })}
         </ul>
         
-        {/* Debug Info - Remove this in production */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-4 p-2 bg-gray-100 rounded text-xs">
-            <p>Debug Info:</p>
-            <p>Email: {user?.email}</p>
-            <p>Role: {profile?.role}</p>
-            <p>Menu Items: {filteredItems.length}</p>
-          </div>
-        )}
+
       </nav>
 
       {/* Footer */}
       <div className="p-4 border-t bg-gray-50">
         <Link
           to="/"
-          className="flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
+          className="flex items-center justify-center w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg"
         >
-          ← Kembali ke Beranda
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Kembali ke Beranda
         </Link>
       </div>
     </div>

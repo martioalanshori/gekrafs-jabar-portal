@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 interface DashboardStats {
   totalUsers: number;
   totalArticles: number;
+  totalArticleViews: number;
   totalProducts: number;
   totalOrders: number;
   activeAccounts: number;
@@ -27,6 +28,7 @@ export const useDashboardData = () => {
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     totalArticles: 0,
+    totalArticleViews: 0,
     totalProducts: 0,
     totalOrders: 0,
     activeAccounts: 0,
@@ -66,6 +68,13 @@ export const useDashboardData = () => {
       }
       queries.push(articlesQuery);
 
+      // Fetch total article views
+      let articleViewsQuery = supabase.from('articles').select('views');
+      if (profile.role === 'admin_artikel') {
+        articleViewsQuery = articleViewsQuery.eq('author_id', user.id);
+      }
+      queries.push(articleViewsQuery);
+
       // Fetch products dengan filter berdasarkan role
       let productsQuery = supabase.from('products').select('id', { count: 'exact', head: true });
       if (profile.role === 'seller') {
@@ -93,14 +102,21 @@ export const useDashboardData = () => {
       const [
         { count: usersCount },
         { count: articlesCount },
+        { data: articleViewsData },
         { count: productsCount },
         { count: ordersCount },
         { count: contactCount }
       ] = await Promise.all(queries);
 
+      // Calculate total article views
+      const totalArticleViews = (articleViewsData || []).reduce((sum: number, article: any) => {
+        return sum + (article.views || 0);
+      }, 0);
+
       console.log('Query results:', {
         usersCount,
         articlesCount,
+        totalArticleViews,
         productsCount,
         ordersCount,
         contactCount
@@ -109,35 +125,73 @@ export const useDashboardData = () => {
       // Calculate active accounts (simplified)
       const activeAccounts = profile.role === 'super_admin' ? Math.floor((usersCount || 0) * 0.8) : 0;
 
-      // Generate simplified monthly data
-      const currentMonth = new Date().getMonth();
+      // Ambil data 6 bulan terakhir untuk setiap tabel
+      const now = new Date();
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const monthlyData = [];
-      
+      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+      // Articles
+      let articlesQuerySupabase = supabase.from('articles').select('id, created_at');
+      if (profile.role === 'admin_artikel') {
+        articlesQuerySupabase = articlesQuerySupabase.eq('author_id', user.id);
+      }
+      articlesQuerySupabase = articlesQuerySupabase.gte('created_at', sixMonthsAgo.toISOString());
+      const { data: articlesData, error: articlesError } = await articlesQuerySupabase;
+      if (articlesError) throw articlesError;
+      // Products
+      let productsQuerySupabase = supabase.from('products').select('id, created_at');
+      if (profile.role === 'seller') {
+        productsQuerySupabase = productsQuerySupabase.eq('seller_id', user.id);
+      }
+      productsQuerySupabase = productsQuerySupabase.gte('created_at', sixMonthsAgo.toISOString());
+      const { data: productsData, error: productsError } = await productsQuerySupabase;
+      if (productsError) throw productsError;
+      // Orders
+      let ordersQuerySupabase = supabase.from('orders').select('id, created_at, status');
+      if (profile.role !== 'super_admin') {
+        ordersQuerySupabase = ordersQuerySupabase.eq('user_id', user.id);
+      }
+      ordersQuerySupabase = ordersQuerySupabase.gte('created_at', sixMonthsAgo.toISOString());
+      const { data: ordersData, error: ordersError } = await ordersQuerySupabase;
+      if (ordersError) throw ordersError;
+      // Group by bulan di JS
+      const monthlyData: Array<{ month: string; articles: number; products: number; orders: number }> = [];
       for (let i = 5; i >= 0; i--) {
-        const monthIndex = (currentMonth - i + 12) % 12;
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const month = d.getMonth();
+        const year = d.getFullYear();
+        const monthLabel = monthNames[month] + ' ' + year.toString().slice(-2);
+        const articlesCount = (articlesData || []).filter(a => {
+          const dt = new Date(a.created_at);
+          return dt.getMonth() === month && dt.getFullYear() === year;
+        }).length;
+        const productsCount = (productsData || []).filter(p => {
+          const dt = new Date(p.created_at);
+          return dt.getMonth() === month && dt.getFullYear() === year;
+        }).length;
+        const ordersCount = (ordersData || []).filter(o => {
+          const dt = new Date(o.created_at);
+          return dt.getMonth() === month && dt.getFullYear() === year;
+        }).length;
         monthlyData.push({
-          month: monthNames[monthIndex],
-          articles: Math.floor((articlesCount || 0) / 6),
-          products: Math.floor((productsCount || 0) / 6),
-          orders: Math.floor((ordersCount || 0) / 6)
+          month: monthLabel,
+          articles: articlesCount,
+          products: productsCount,
+          orders: ordersCount
         });
       }
-
-      // Orders by status (simplified)
-      const totalOrders = ordersCount || 0;
-      const ordersByStatus = [
-        { status: 'pending', count: Math.floor(totalOrders * 0.4) },
-        { status: 'processing', count: Math.floor(totalOrders * 0.3) },
-        { status: 'completed', count: Math.floor(totalOrders * 0.25) },
-        { status: 'cancelled', count: Math.floor(totalOrders * 0.05) }
-      ];
+      // Status pesanan asli
+      const statusMap: Record<string, number> = {};
+      (ordersData || []).forEach((row: any) => {
+        if (row.status) statusMap[row.status] = (statusMap[row.status] || 0) + 1;
+      });
+      const ordersByStatus = Object.entries(statusMap).map(([status, count]) => ({ status, count }));
 
       setStats({
         totalUsers: usersCount || 0,
         totalArticles: articlesCount || 0,
+        totalArticleViews: totalArticleViews,
         totalProducts: productsCount || 0,
-        totalOrders: totalOrders,
+        totalOrders: ordersData?.length || 0,
         activeAccounts,
         bookingMeetings: contactCount || 0,
         monthlyData,
@@ -148,7 +202,7 @@ export const useDashboardData = () => {
 
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
-      setError('Failed to fetch dashboard data');
+      setError('Failed to fetch dashboard data: ' + (err?.message || err));
     } finally {
       setLoading(false);
     }

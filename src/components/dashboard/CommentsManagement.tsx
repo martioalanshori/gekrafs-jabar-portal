@@ -284,7 +284,7 @@ const CommentsManagement = () => {
                           </div>
                           <div className="flex items-center">
                             <Calendar className="h-3 w-3 mr-1" />
-                            {new Date(comment.created_at).toLocaleDateString('id-ID', {
+                            {new Date(comment.created_at).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric',

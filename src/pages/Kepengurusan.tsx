@@ -69,7 +69,7 @@ const Kepengurusan = () => {
         kampus: "Universitas Padjajaran",
         email: "presidium5@gekrafs-jabar.org",
         phone: "+62 812 3456 7894",
-        photo: "assets/img/kepengurusan/syaira.png",
+        photo: "assets/img/kepengurusan/syafa.png",
         socials: {
           facebook: "https://facebook.com/dimasaditya",
           instagram: "https://instagram.com/dimasaditya",
@@ -99,7 +99,7 @@ const Kepengurusan = () => {
         kampus: "Universitas Garut",
         email: "sekretaris2@gekrafs-jabar.org",
         phone: "+62 812 3456 7892",
-        photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
+        photo: "assets/img/kepengurusan/ghiyats.jpeg",
         socials: {
           facebook: "https://facebook.com/budisantoso",
           instagram: "https://instagram.com/budisantoso",
@@ -110,7 +110,7 @@ const Kepengurusan = () => {
       {
         nama: "Azra Teapha Fellica",
         jabatan: "Wakil Sekretaris II",
-        kampus: "Universitas Telkom",
+        kampus: "Universitas Islam Bandung",
         email: "sekretaris3@gekrafs-jabar.org",
         phone: "+62 812 3456 7895",
         photo: "assets/img/kepengurusan/azra.png",
@@ -127,7 +127,7 @@ const Kepengurusan = () => {
         kampus: "Universitas Widyatama",
         email: "bendahara1@gekrafs-jabar.org",
         phone: "+62 812 3456 7893",
-        photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+        photo: "assets/img/kepengurusan/syairav2.PNG",
         socials: {
           facebook: "https://facebook.com/dewilestari",
           instagram: "https://instagram.com/dewilestari",
@@ -155,12 +155,12 @@ const Kepengurusan = () => {
       nama: "Bidang 1 (Periklanan, Penerbitan dan Desain Produk)",
       anggota: [
         {
-          nama: "Ketua Bidang 2",
-          jabatan: "Ketua Bidang 2",
-          kampus: "Universitas Indonesia",
+          nama: "Ika Indah Wahyuni",
+          jabatan: "Ketua Bidang 1",
+          kampus: "Universitas Informatika dan Bisnis Indonesia",
           email: "ketua.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 7891",
-          photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/ika.png",
           socials: {
             facebook: "https://facebook.com/ketua.bidang2",
             instagram: "https://instagram.com/ketua.bidang2",
@@ -169,8 +169,8 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
+          nama: "Endroe Daniswara Mohammad Fahreza",
+          jabatan: "Anggota Bidang 1",
           kampus: "Universitas Pendidikan Indonesia",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
@@ -183,12 +183,12 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
+          nama: "Fasya Nabila",
+          jabatan: "Anggota Bidang 1",
+          kampus: "Universitas Muhammadiyah Bandung",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/inifasya.png",
           socials: {
             facebook: "https://facebook.com/anggota3.bidang2",
             instagram: "https://instagram.com/anggota3.bidang2",
@@ -197,9 +197,9 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
+          nama: "Hikmal Fadhillah ",
+          jabatan: "Anggota Bidang 1",
+          kampus: "Universitas Muhammadiyah Bandung",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
           photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
@@ -209,19 +209,19 @@ const Kepengurusan = () => {
             linkedin: "https://linkedin.com/in/anggota3.bidang2",
             x: "https://x.com/anggota3.bidang2"
           }
-        },
+        }
       ]
     },
     {
       nama: "Bidang 2 (Film, Animasi, Video, Televisi, Radio, dan Fotografi)",
       anggota: [
         {
-          nama: "Ibnu Mucharror",
+          nama: "Asep Hermawan",
           jabatan: "Ketua Bidang 2",
           kampus: "Universitas Digitech",
           email: "ketua.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 7891",
-          photo: "assets/img/kepengurusan/ibnu.png",
+          photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
           socials: {
             facebook: "https://facebook.com/ketua.bidang2",
             instagram: "https://instagram.com/ketua.bidang2",
@@ -230,7 +230,7 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Husein",
+          nama: "Recky Batara",
           jabatan: "Anggota Bidang 2",
           kampus: "Universitas Pendidikan Indonesia",
           email: "anggota3.bidang2@gekrafs-jabar.org",
@@ -244,106 +244,50 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
+          nama: "Reva Anwar",
           jabatan: "Anggota Bidang 2",
           kampus: "Universitas Pendidikan Indonesia",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/reva.png",
           socials: {
             facebook: "https://facebook.com/anggota3.bidang2",
             instagram: "https://instagram.com/anggota3.bidang2",
             linkedin: "https://linkedin.com/in/anggota3.bidang2",
             x: "https://x.com/anggota3.bidang2"
           }
-        },
-        {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
-          email: "anggota3.bidang2@gekrafs-jabar.org",
-          phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-          socials: {
-            facebook: "https://facebook.com/anggota3.bidang2",
-            instagram: "https://instagram.com/anggota3.bidang2",
-            linkedin: "https://linkedin.com/in/anggota3.bidang2",
-            x: "https://x.com/anggota3.bidang2"
-          }
-        },
+        }
       ]
     },
     {
       nama: "Bidang 3 (Arsitektur, Desain Interior, Dan Seni Rupa)",
       anggota: [
         {
-          nama: "Ketua Bidang 2",
-          jabatan: "Ketua Bidang 2",
-          kampus: "Universitas Indonesia",
+          nama: "Tiara Febrianti",
+          jabatan: "Ketua Bidang 3",
+          kampus: "Institut Teknologi Garut",
           email: "ketua.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 7891",
-          photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/tiarav2.PNG",
           socials: {
             facebook: "https://facebook.com/ketua.bidang2",
             instagram: "https://instagram.com/ketua.bidang2",
             linkedin: "https://linkedin.com/in/ketua.bidang2",
             x: "https://x.com/ketua.bidang2"
           }
-        },
-        {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
-          email: "anggota3.bidang2@gekrafs-jabar.org",
-          phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-          socials: {
-            facebook: "https://facebook.com/anggota3.bidang2",
-            instagram: "https://instagram.com/anggota3.bidang2",
-            linkedin: "https://linkedin.com/in/anggota3.bidang2",
-            x: "https://x.com/anggota3.bidang2"
-          }
-        },
-        {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
-          email: "anggota3.bidang2@gekrafs-jabar.org",
-          phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-          socials: {
-            facebook: "https://facebook.com/anggota3.bidang2",
-            instagram: "https://instagram.com/anggota3.bidang2",
-            linkedin: "https://linkedin.com/in/anggota3.bidang2",
-            x: "https://x.com/anggota3.bidang2"
-          }
-        },
-        {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
-          email: "anggota3.bidang2@gekrafs-jabar.org",
-          phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-          socials: {
-            facebook: "https://facebook.com/anggota3.bidang2",
-            instagram: "https://instagram.com/anggota3.bidang2",
-            linkedin: "https://linkedin.com/in/anggota3.bidang2",
-            x: "https://x.com/anggota3.bidang2"
-          }
-        },
+        }
       ]
     },
     {
       nama: "Bidang 4 (Kuliner)",
       anggota: [
         {
-          nama: "Ketua Bidang 2",
-          jabatan: "Ketua Bidang 2",
-          kampus: "Universitas Indonesia",
+          nama: "Fida Fatria",
+          jabatan: "Ketua Bidang 4",
+          kampus: "Telkom University",
           email: "ketua.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 7891",
-          photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/fida.png",
           socials: {
             facebook: "https://facebook.com/ketua.bidang2",
             instagram: "https://instagram.com/ketua.bidang2",
@@ -352,8 +296,8 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
+          nama: "Muhammad Farhan Ali",
+          jabatan: "Anggota Bidang 4",
           kampus: "Universitas Pendidikan Indonesia",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
@@ -366,8 +310,8 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
+          nama: "Muchammad Miqdad",
+          jabatan: "Anggota Bidang 4",
           kampus: "Universitas Pendidikan Indonesia",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
@@ -380,12 +324,12 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
+          nama: "Muhamad Falaq",
+          jabatan: "Anggota Bidang 4",
+          kampus: "STIE Wikara",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/ayaq.png",
           socials: {
             facebook: "https://facebook.com/anggota3.bidang2",
             instagram: "https://instagram.com/anggota3.bidang2",
@@ -393,18 +337,46 @@ const Kepengurusan = () => {
             x: "https://x.com/anggota3.bidang2"
           }
         },
+        {
+          nama: "Antie Nurul Fauziah",
+          jabatan: "Anggota Bidang 4",
+          kampus: "Universitas Pendidikan Indonesia",
+          email: "anggota3.bidang2@gekrafs-jabar.org",
+          phone: "+62 812 3456 8191",
+          photo: "assets/img/kepengurusan/antie.png",
+          socials: {
+            facebook: "https://facebook.com/anggota3.bidang2",
+            instagram: "https://instagram.com/anggota3.bidang2",
+            linkedin: "https://linkedin.com/in/anggota3.bidang2",
+            x: "https://x.com/anggota3.bidang2"
+          }
+        },
+        {
+          nama: "Asri Kitrianti",
+          jabatan: "Anggota Bidang 4",
+          kampus: "Universitas Singaperbangsa Karawang",
+          email: "anggota3.bidang2@gekrafs-jabar.org",
+          phone: "+62 812 3456 8191",
+          photo: "assets/img/kepengurusan/asriv2.PNG",
+          socials: {
+            facebook: "https://facebook.com/anggota3.bidang2",
+            instagram: "https://instagram.com/anggota3.bidang2",
+            linkedin: "https://linkedin.com/in/anggota3.bidang2",
+            x: "https://x.com/anggota3.bidang2"
+          }
+        }
       ]
     },
     {
       nama: "Bidang 5 (Fesyen)",
       anggota: [
         {
-          nama: "Ketua Bidang 2",
-          jabatan: "Ketua Bidang 2",
-          kampus: "Universitas Indonesia",
+          nama: "Amelia Rida Nurfitriani Iskandar",
+          jabatan: "Ketua Bidang 5",
+          kampus: "Universitas Pendidikan Indonesia",
           email: "ketua.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 7891",
-          photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/ameliav2.PNG",
           socials: {
             facebook: "https://facebook.com/ketua.bidang2",
             instagram: "https://instagram.com/ketua.bidang2",
@@ -413,9 +385,23 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
+          nama: "Mohamad Ramdani Rahman",
+          jabatan: "Anggota Bidang 5",
           kampus: "Universitas Pendidikan Indonesia",
+          email: "anggota3.bidang2@gekrafs-jabar.org",
+          phone: "+62 812 3456 8191",
+          photo: "assets/img/kepengurusan/ramdani.png",
+          socials: {
+            facebook: "https://facebook.com/anggota3.bidang2",
+            instagram: "https://instagram.com/anggota3.bidang2",
+            linkedin: "https://linkedin.com/in/anggota3.bidang2",
+            x: "https://x.com/anggota3.bidang2"
+          }
+        },
+        {
+          nama: "Kayla Mutiara Navisah",
+          jabatan: "Anggota Bidang 5",
+          kampus: "Universitas Telkom",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
           photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
@@ -427,26 +413,12 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
+          nama: "Miftahul Irfan Rachman",
+          jabatan: "Anggota Bidang 5",
+          kampus: "Universitas Islam Bandung",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-          socials: {
-            facebook: "https://facebook.com/anggota3.bidang2",
-            instagram: "https://instagram.com/anggota3.bidang2",
-            linkedin: "https://linkedin.com/in/anggota3.bidang2",
-            x: "https://x.com/anggota3.bidang2"
-          }
-        },
-        {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
-          email: "anggota3.bidang2@gekrafs-jabar.org",
-          phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/irfan.png",
           socials: {
             facebook: "https://facebook.com/anggota3.bidang2",
             instagram: "https://instagram.com/anggota3.bidang2",
@@ -463,13 +435,27 @@ const Kepengurusan = () => {
           nama: "Muhammad Martio Alanshori",
           jabatan: "Ketua Bidang 6",
           kampus: "Universitas Teknologi Bandung",
-          email: "martioala",
+          email: "martioalanshori@gmail.com",
           phone: "+62 812 3456 7891",
           photo: "assets/img/kepengurusan/martio.png",
           socials: {
-            facebook: "https://facebook.com/ketua.bidang2",
+            facebook: "https://facebook.com/martioo19",
             instagram: "https://instagram.com/martio.alan",
-            linkedin: "https://linkedin.com/in/ketua.bidang2",
+            linkedin: "https://linkedin.com/in/martioalanshori",
+            x: "https://x.com/ketua.bidang2"
+          }
+        },
+        {
+          nama: "Ikeu Mustika",
+          jabatan: "Anggota Bidang 6",
+          kampus: "Universitas Pendidikan Indonesia",
+          email: "ikeumustika@gmail.com",
+          phone: "+62 812 3456 7891",
+          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+          socials: {
+            facebook: "https://facebook.com/sdsd",
+            instagram: "https://instagram.com/sdsd",
+            linkedin: "https://linkedin.com/in/sdsd",
             x: "https://x.com/ketua.bidang2"
           }
         }
@@ -479,12 +465,12 @@ const Kepengurusan = () => {
       nama: "Bidang 7 (Musik & Seni Pertunjukan)",
       anggota: [
         {
-          nama: "Ketua Bidang 2",
-          jabatan: "Ketua Bidang 2",
-          kampus: "Universitas Indonesia",
+          nama: "Arifa Rizal Raspati",
+          jabatan: "Ketua Bidang 7",
+          kampus: "Universitas Pendidikan Indonesia",
           email: "ketua.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 7891",
-          photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/arifa.png",
           socials: {
             facebook: "https://facebook.com/ketua.bidang2",
             instagram: "https://instagram.com/ketua.bidang2",
@@ -493,9 +479,65 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
+          nama: "Hilmy Faadhilah Yulianto",
+          jabatan: "Anggota Bidang 7",
+          kampus: "Universitas Garut",
+          email: "anggota3.bidang2@gekrafs-jabar.org",
+          phone: "+62 812 3456 8191",
+          photo: "assets/img/kepengurusan/hilmy.png",
+          socials: {
+            facebook: "https://facebook.com/anggota3.bidang2",
+            instagram: "https://instagram.com/anggota3.bidang2",
+            linkedin: "https://linkedin.com/in/anggota3.bidang2",
+            x: "https://x.com/anggota3.bidang2"
+          }
+        },
+        {
+          nama: "Rizki Maulana",
+          jabatan: "Anggota Bidang 7",
+          kampus: "Universitas Garut",
+          email: "anggota3.bidang2@gekrafs-jabar.org",
+          phone: "+62 812 3456 8191",
+          photo: "assets/img/kepengurusan/rizkymaul.png",
+          socials: {
+            facebook: "https://facebook.com/anggota3.bidang2",
+            instagram: "https://instagram.com/anggota3.bidang2",
+            linkedin: "https://linkedin.com/in/anggota3.bidang2",
+            x: "https://x.com/anggota3.bidang2"
+          }
+        },
+        {
+          nama: "Fikri Darojatul Ilmi",
+          jabatan: "Anggota Bidang 7",
+          kampus: "Institut Pendidikan Indonesia Garut",
+          email: "anggota3.bidang2@gekrafs-jabar.org",
+          phone: "+62 812 3456 8191",
+          photo: "assets/img/kepengurusan/fikri.png",
+          socials: {
+            facebook: "https://facebook.com/anggota3.bidang2",
+            instagram: "https://instagram.com/anggota3.bidang2",
+            linkedin: "https://linkedin.com/in/anggota3.bidang2",
+            x: "https://x.com/anggota3.bidang2"
+          }
+        },
+        {
+          nama: "Mochammad Zidane Maulana",
+          jabatan: "Anggota Bidang 7",
+          kampus: "Institut Pendidikan Indonesia Garut",
+          email: "anggota3.bidang2@gekrafs-jabar.org",
+          phone: "+62 812 3456 8191",
+          photo: "assets/img/kepengurusan/zidane.png",
+          socials: {
+            facebook: "https://facebook.com/anggota3.bidang2",
+            instagram: "https://instagram.com/anggota3.bidang2",
+            linkedin: "https://linkedin.com/in/anggota3.bidang2",
+            x: "https://x.com/anggota3.bidang2"
+          }
+        },
+        {
+          nama: "Alif Muhammad Ramdhan",
+          jabatan: "Anggota Bidang 7",
+          kampus: "Universitas Islam Bandung",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
           photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
@@ -507,9 +549,9 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
+          nama: "Sufyan Adnan",
+          jabatan: "Anggota Bidang 7",
+          kampus: "Universitas Islam Bandung",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
           photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
@@ -521,12 +563,12 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
+          nama: "Khafifah Lidiana Siregar",
+          jabatan: "Anggota Bidang 7",
+          kampus: "Universitas Indonesia",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/zidane.png",
           socials: {
             facebook: "https://facebook.com/anggota3.bidang2",
             instagram: "https://instagram.com/anggota3.bidang2",
@@ -540,12 +582,12 @@ const Kepengurusan = () => {
       nama: "Bidang 8 (Desain Komunikasi Visual)",
       anggota: [
         {
-          nama: "Ketua Bidang 2",
-          jabatan: "Ketua Bidang 2",
-          kampus: "Universitas Indonesia",
+          nama: "Ibnu Mucharror",
+          jabatan: "Ketua Bidang 8",
+          kampus: "Universitas Digitech",
           email: "ketua.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 7891",
-          photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/ibnu.png",
           socials: {
             facebook: "https://facebook.com/ketua.bidang2",
             instagram: "https://instagram.com/ketua.bidang2",
@@ -554,12 +596,12 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
+          nama: "Muhammad Husein Syakir Alhasani",
+          jabatan: "Anggota Bidang 8",
+          kampus: "Universitas Digitech",
           email: "anggota3.bidang2@gekrafs-jabar.org",
           phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+          photo: "assets/img/kepengurusan/husein.png",
           socials: {
             facebook: "https://facebook.com/anggota3.bidang2",
             instagram: "https://instagram.com/anggota3.bidang2",
@@ -568,7 +610,7 @@ const Kepengurusan = () => {
           }
         },
         {
-          nama: "Anggota 3 Bidang 2",
+          nama: "Muhammad Luthfi Fathurrahman",
           jabatan: "Anggota Bidang 2",
           kampus: "Universitas Pendidikan Indonesia",
           email: "anggota3.bidang2@gekrafs-jabar.org",
@@ -580,21 +622,7 @@ const Kepengurusan = () => {
             linkedin: "https://linkedin.com/in/anggota3.bidang2",
             x: "https://x.com/anggota3.bidang2"
           }
-        },
-        {
-          nama: "Anggota 3 Bidang 2",
-          jabatan: "Anggota Bidang 2",
-          kampus: "Universitas Pendidikan Indonesia",
-          email: "anggota3.bidang2@gekrafs-jabar.org",
-          phone: "+62 812 3456 8191",
-          photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-          socials: {
-            facebook: "https://facebook.com/anggota3.bidang2",
-            instagram: "https://instagram.com/anggota3.bidang2",
-            linkedin: "https://linkedin.com/in/anggota3.bidang2",
-            x: "https://x.com/anggota3.bidang2"
-          }
-        },
+        }
       ]
     }
   ]
@@ -649,7 +677,7 @@ const Kepengurusan = () => {
         <div className="container mx-auto px-4 py-20">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-800 mb-4">Kepengurusan GEKRAFS Jawa Barat</h1>
-            <p className="text-xl text-gray-600">Tim pengurus periode 2024-2025</p>
+            <p className="text-xl text-gray-600">Tim pengurus periode 2025-2026</p>
           </div>
 
           {/* Eksekutif Board */}

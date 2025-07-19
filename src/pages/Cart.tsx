@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,38 +20,36 @@ const Cart = () => {
   const [shippingAddress, setShippingAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("transfer");
   const [loading, setLoading] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
-  // Data dummy produk (sama seperti di Ecommerce)
-  const dummyProducts: Product[] = [
-    {
-      id: "1",
-      name: "Kerajinan Tangan Tradisional",
-      description: "Kerajinan tangan buatan mahasiswa dengan sentuhan tradisional modern",
-      price: 150000,
-      image_url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      seller_id: "1",
-      category: "Kerajinan",
-      stock: 10,
-      active: true
-    },
-    {
-      id: "2", 
-      name: "Tas Rajut Handmade",
-      description: "Tas rajut berkualitas tinggi dengan desain unik dan fungsional",
-      price: 85000,
-      image_url: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      seller_id: "1",
-      category: "Fashion",
-      stock: 15,
-      active: true
-    }
-  ];
-
+  // Load cart from localStorage on mount
   useEffect(() => {
-    setProducts(dummyProducts);
-    // Simulate cart items for demo
-    setCartItems({ "1": 2, "2": 1 });
+    const savedCart = localStorage.getItem('gekrafs-cart');
+    if (savedCart) {
+      setCartItems(JSON.parse(savedCart));
+    }
   }, []);
+
+  // Fetch products from Supabase
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoadingProducts(true);
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('active', true);
+      if (!error && data) {
+        setProducts(data as Product[]);
+      }
+      setLoadingProducts(false);
+    };
+    fetchProducts();
+  }, []);
+
+  // Update localStorage when cartItems changes
+  useEffect(() => {
+    localStorage.setItem('gekrafs-cart', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const updateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -81,11 +78,23 @@ const Cart = () => {
   };
 
   const handleCheckout = async () => {
+    // Bersihkan cart dari produk yang tidak valid
+    const validProductIds = new Set(products.map(p => p.id));
+    const invalidProductIds = Object.keys(cartItems).filter(id => !validProductIds.has(id));
+    if (invalidProductIds.length > 0) {
+      invalidProductIds.forEach(id => delete cartItems[id]);
+      setCartItems({ ...cartItems });
+      toast.error("Ada produk yang sudah tidak tersedia, silakan cek ulang keranjang Anda.");
+      return;
+    }
     if (!shippingAddress.trim()) {
       toast.error("Alamat pengiriman harus diisi");
       return;
     }
-
+    if (Object.keys(cartItems).length === 0) {
+      toast.error("Keranjang belanja kosong");
+      return;
+    }
     setLoading(true);
     try {
       // Create order in Supabase
@@ -114,15 +123,36 @@ const Cart = () => {
         };
       });
 
+      console.log("Order Items to insert:", orderItems);
       const { error: itemsError } = await supabase
         .from('order_items')
         .insert(orderItems);
 
-      if (itemsError) throw itemsError;
+      if (itemsError) {
+        console.error("Order items insert error:", itemsError, orderItems);
+        toast.error("Gagal menambah item pesanan: " + (itemsError.message || itemsError.details || JSON.stringify(itemsError)));
+        throw itemsError;
+      }
+
+      // Reduce stock for each product
+      for (const [productId, quantity] of Object.entries(cartItems)) {
+        const product = products.find(p => p.id === productId);
+        if (product) {
+          const newStock = Math.max(0, product.stock - quantity);
+          const { error: stockError } = await supabase
+            .from('products')
+            .update({ stock: newStock })
+            .eq('id', productId);
+          if (stockError) {
+            console.error('Error updating stock for product', productId, stockError.message);
+            toast.error(`Gagal update stok untuk produk ${product.name}`);
+          }
+        }
+      }
 
       toast.success("Pesanan berhasil dibuat! Silakan tunggu konfirmasi pembayaran dari admin.");
       setCartItems({});
-      
+      localStorage.removeItem('gekrafs-cart');
       // Navigate to a success page or order details
       navigate(`/dashboard`, { 
         state: { 
@@ -140,6 +170,18 @@ const Cart = () => {
 
   if (!user) {
     return <Navigate to="/signin" replace />;
+  }
+
+  if (loadingProducts) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+        <Header />
+        <div className="pt-16 flex items-center justify-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
   const cartProducts = products.filter(product => cartItems[product.id]);
@@ -162,7 +204,7 @@ const Cart = () => {
               <ShoppingBag className="h-24 w-24 text-gray-300 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-600 mb-2">Keranjang Kosong</h2>
               <p className="text-gray-500 mb-6">Belum ada produk di keranjang Anda</p>
-              <Button onClick={() => navigate('/ecommerce')} className="bg-gradient-to-r from-sky-600 to-yellow-6000">
+              <Button onClick={() => navigate('/ecommerce')} className="bg-gradient-to-r from-sky-600 to-yellow-600">
                 Mulai Belanja
               </Button>
             </div>
@@ -253,6 +295,15 @@ const Cart = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
+                      <label className="block text-sm font-medium mb-2">Email</label>
+                      <Input
+                        type="email"
+                        value={user?.email || ''}
+                        disabled
+                        className="w-full bg-gray-100 cursor-not-allowed"
+                      />
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium mb-2">Alamat Lengkap</label>
                       <Textarea
                         value={shippingAddress}
@@ -270,7 +321,7 @@ const Cart = () => {
                         onChange={(e) => setPaymentMethod(e.target.value)}
                         className="w-full p-2 border rounded-lg"
                       >
-                        <option value="transfer">Transfer Bank</option>
+                        <option value="transfer">Transfer Bank (BCA 342323240 a/n Gekrafs Kampus Jabar)</option>
                         <option value="cod">Bayar di Tempat (COD)</option>
                       </select>
                     </div>
@@ -278,7 +329,7 @@ const Cart = () => {
                     <Button
                       onClick={handleCheckout}
                       disabled={loading}
-                      className="w-full bg-gradient-to-r from-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700"
+                      className="w-full bg-sky-600 to-yellow-600 hover:from-sky-700 hover:to-yellow-700"
                     >
                       {loading ? "Memproses..." : "Checkout"}
                     </Button>

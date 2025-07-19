@@ -11,6 +11,40 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import DOMPurify from 'dompurify';
+import DynamicMetaTags from "@/components/DynamicMetaTags";
+import { generateSocialPreviewUrl } from "@/utils/socialPreview";
+import { recordArticleView } from "@/utils/views";
+
+// Function to extract ID from slug
+const extractIdFromSlug = (slug: string): string => {
+  // Handle case where slug might be just the ID
+  if (!slug.includes('-')) {
+    return slug;
+  }
+  
+  // Find UUID pattern in the entire slug
+  const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+  const uuidMatch = slug.match(uuidRegex);
+  
+  if (uuidMatch) {
+    console.log('Found UUID in slug:', uuidMatch[0]);
+    return uuidMatch[0];
+  }
+  
+  // If no UUID found, try to get the last part that might be a shorter ID
+  const parts = slug.split('-');
+  const lastPart = parts[parts.length - 1];
+  
+  // Check if last part looks like a UUID (even if incomplete)
+  if (lastPart && lastPart.length >= 8) {
+    console.log('Using last part as ID:', lastPart);
+    return lastPart;
+  }
+  
+  // Fallback: return the original slug
+  console.warn('Could not extract valid UUID from slug:', slug);
+  return slug;
+};
 
 interface Article {
   id: string;
@@ -57,22 +91,42 @@ const ArticleDetail = () => {
           return;
         }
 
+        // Extract the actual ID from the slug
+        const actualId = extractIdFromSlug(id);
+        console.log('Extracted ID:', actualId);
+        console.log('Original slug:', id);
+
+        // First, let's check if the article exists
         const { data, error } = await supabase
           .from('articles')
           .select('*')
-          .eq('id', id)
+          .eq('id', actualId)
           .eq('published', true)
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
 
+        if (!data) {
+          throw new Error('Article not found');
+        }
+
+        console.log('Article found:', data);
         setArticle(data);
 
-        // Increment view count
-        await supabase
-          .from('articles')
-          .update({ views: (data.views || 0) + 1 })
-          .eq('id', id);
+        // Record article view using utility function
+        try {
+          const viewRecorded = await recordArticleView(actualId);
+          if (viewRecorded) {
+            // Update local state if view was recorded
+            setArticle(prev => prev ? { ...prev, views: (prev.views || 0) + 1 } : null);
+          }
+        } catch (viewError) {
+          console.error('Error recording view:', viewError);
+          // Don't throw error for view count update
+        }
 
       } catch (error) {
         console.error('Error fetching article:', error);
@@ -92,17 +146,26 @@ const ArticleDetail = () => {
       
       setCommentsLoading(true);
       try {
+        const actualId = extractIdFromSlug(id);
+        console.log('Fetching comments for article ID:', actualId);
+        
         const { data, error } = await supabase
           .from('comments')
           .select('*')
-          .eq('article_id', id)
+          .eq('article_id', actualId)
           .eq('approved', true)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching comments:', error);
+          throw error;
+        }
+        
+        console.log('Comments fetched:', data);
         setComments(data || []);
       } catch (error) {
         console.error('Error fetching comments:', error);
+        setComments([]);
       } finally {
         setCommentsLoading(false);
       }
@@ -125,10 +188,11 @@ const ArticleDetail = () => {
     }
 
     try {
+      const actualId = extractIdFromSlug(id!);
       const { error } = await supabase
         .from('comments')
         .insert({
-          article_id: id,
+          article_id: actualId,
           name: commentForm.name,
           email: commentForm.email,
           comment: commentForm.comment,
@@ -152,11 +216,18 @@ const ArticleDetail = () => {
     }
   };
 
+  const socialPreviewUrl = article ? generateSocialPreviewUrl(
+    article.id,
+    article.title,
+    article.excerpt || article.content.substring(0, 160),
+    article.image_url
+  ) : window.location.href;
+
   const shareUrls = {
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article?.title || '')}`,
-    whatsapp: `https://wa.me/?text=${encodeURIComponent((article?.title || '') + ' ' + window.location.href)}`,
-    instagram: window.location.href // Instagram doesn't have direct sharing URL, will copy link
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(socialPreviewUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(socialPreviewUrl)}&text=${encodeURIComponent(article?.title || '')}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent((article?.title || '') + ' ' + socialPreviewUrl)}`,
+    instagram: socialPreviewUrl
   };
 
   // Sanitize content to prevent XSS attacks
@@ -214,6 +285,15 @@ const ArticleDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+      {article && (
+        <DynamicMetaTags 
+          title={`${article.title} - GEKRAFS Kampus Jabar`}
+          description={article.excerpt || article.content.substring(0, 160).replace(/<[^>]*>/g, '') + '...'}
+          image={article.image_url || 'https://gekrafskampusjabar.my.id/assets/img/gekrafslogo.png'}
+          type="article"
+          url={`https://gekrafskampusjabar.my.id/artikel/${id}`}
+        />
+      )}
       <Header />
       
       <div className="pt-16">
@@ -258,7 +338,7 @@ const ArticleDetail = () => {
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-8 pb-6 border-b">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-2" />
-                      {new Date(article.created_at).toLocaleDateString('id-ID', {
+                      {new Date(article.created_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
@@ -337,10 +417,10 @@ const ArticleDetail = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          navigator.clipboard.writeText(window.location.href);
+                          navigator.clipboard.writeText(socialPreviewUrl);
                           toast({
-                            title: "Link Disalin",
-                            description: "Link artikel berhasil disalin ke clipboard",
+                            title: "Link Artikel Disalin",
+                            description: "Link artikel dengan preview yang benar telah disalin ke clipboard. Gunakan link ini untuk share di social media.",
                           });
                         }}
                         className="flex items-center space-x-2"
@@ -420,7 +500,7 @@ const ArticleDetail = () => {
                             <div className="flex items-center space-x-2 mb-1">
                               <h5 className="font-semibold text-gray-800">{comment.name}</h5>
                               <span className="text-sm text-gray-500">
-                                {new Date(comment.created_at).toLocaleDateString('id-ID', {
+                                {new Date(comment.created_at).toLocaleDateString('en-US', {
                                   year: 'numeric',
                                   month: 'long',
                                   day: 'numeric',

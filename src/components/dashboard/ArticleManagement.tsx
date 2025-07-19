@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { generateSlugWithId } from '@/utils/slug';
 
 interface Article {
   id: string;
@@ -203,6 +204,17 @@ const ArticleManagement = () => {
     }
   };
 
+  const handleViewArticle = (article: Article) => {
+    // Generate slug for the article
+    const slug = generateSlugWithId(article.title, article.id);
+    const articleUrl = `${window.location.origin}/artikel/${slug}`;
+    
+    // Open article in new tab
+    window.open(articleUrl, '_blank');
+    
+    toast.success('Artikel dibuka di tab baru');
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -307,20 +319,35 @@ const ArticleManagement = () => {
               articles.map((article) => (
                 <div key={article.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 smooth-transition">
                   <div className="flex-1">
-                    <h3 className="font-medium">{article.title}</h3>
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h3 className="font-medium">{article.title}</h3>
+                      {!article.published && (
+                        <Badge variant="secondary" className="text-xs">
+                          Draft
+                        </Badge>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">{article.excerpt}</p>
                     <div className="flex items-center space-x-2 mt-2">
                       <Badge 
                         variant={article.published ? "default" : "secondary"}
                         className="cursor-pointer hover:scale-105 smooth-transition"
                         onClick={() => togglePublished(article)}
+                        title={article.published ? "Klik untuk jadikan draft" : "Klik untuk publikasikan"}
                       >
                         {article.published ? "Published" : "Draft"}
                       </Badge>
                       <Badge variant="outline">{article.category}</Badge>
                       <div className="flex items-center text-sm text-gray-500">
                         <Eye className="h-3 w-3 mr-1" />
-                        {article.views || 0}
+                        {article.views || 0} views
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {new Date(article.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
                       </div>
                     </div>
                   </div>
@@ -330,14 +357,25 @@ const ArticleManagement = () => {
                       size="sm" 
                       onClick={() => handleEdit(article)}
                       className="hover:scale-105 smooth-transition"
+                      title="Edit Artikel"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button 
                       variant="outline" 
                       size="sm" 
+                      onClick={() => handleViewArticle(article)}
+                      className="text-blue-600 hover:text-blue-700 hover:scale-105 smooth-transition"
+                      title="Lihat Artikel"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
                       onClick={() => handleDelete(article.id)}
                       className="text-red-600 hover:text-red-700 hover:scale-105 smooth-transition"
+                      title="Hapus Artikel"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

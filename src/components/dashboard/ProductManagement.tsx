@@ -334,39 +334,40 @@ const ProductManagement = () => {
               </div>
             ) : (
               products.map((product) => (
-                <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 smooth-transition">
-                  <div className="flex-1">
-                    <h3 className="font-medium">{product.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{product.description}</p>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Badge>Rp {product.price.toLocaleString('id-ID')}</Badge>
-                      <Badge variant="outline">Stock: {product.stock}</Badge>
-                      <Badge 
-                        variant={product.active ? "default" : "secondary"}
-                        className="cursor-pointer hover:scale-105 smooth-transition"
-                        onClick={() => toggleActive(product)}
-                      >
-                        {product.active ? "Active" : "Inactive"}
-                      </Badge>
-                      <Badge variant="outline">{product.category}</Badge>
+                <div key={product.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-gray-50 smooth-transition gap-1 sm:gap-0">
+                  <div className="flex-1 w-full">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                      {product.image_url && (
+                        <img src={product.image_url} alt={product.name} className="w-10 h-10 sm:w-14 sm:h-14 object-cover rounded border" />
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-sm sm:text-base text-gray-800">{product.name}</h3>
+                        <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">{product.description}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
+                      <span className="bg-gray-800 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-semibold text-xs sm:text-sm">Rp {product.price.toLocaleString('id-ID')}</span>
+                      <span className="bg-gray-200 text-gray-700 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-medium text-xs sm:text-sm">Stock: {product.stock}</span>
+                      <span className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-medium text-xs sm:text-sm ${product.active ? 'bg-gray-100 text-gray-800' : 'bg-gray-200 text-gray-400'}`}>{product.active ? 'Active' : 'Inactive'}</span>
+                      <span className="bg-gray-100 text-gray-500 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-medium text-xs sm:text-xs">{product.category}</span>
                     </div>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-row gap-1 sm:gap-2 mt-2 sm:mt-0 sm:ml-4">
                     <Button 
                       variant="outline" 
-                      size="sm" 
+                      size="icon"
+                      className="w-7 h-7 sm:w-9 sm:h-9 hover:scale-105 smooth-transition"
                       onClick={() => handleEdit(product)}
-                      className="hover:scale-105 smooth-transition"
                     >
-                      <Edit className="h-4 w-4" />
+                      <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                     </Button>
                     <Button 
                       variant="outline" 
-                      size="sm" 
+                      size="icon"
+                      className="w-7 h-7 sm:w-9 sm:h-9 text-red-600 hover:text-red-700 hover:scale-105 smooth-transition"
                       onClick={() => handleDelete(product.id)}
-                      className="text-red-600 hover:text-red-700 hover:scale-105 smooth-transition"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                     </Button>
                   </div>
                 </div>

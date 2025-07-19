@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="space-y-4 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start space-x-2">
               <div className="p-0">
-                    <img src="assets/img/gekrafslogo.png" alt="GEKRAFS Logo" className="h-8 w-8" />
+                    <img src="assets/img/gekrafslogo.png" alt="GEKRAFS Kampus Jabar Logo" className="h-8 w-8" />
               </div>
               <span className="font-bold text-xl">GEKRAFS Kampus Jabar</span>
             </div>
@@ -18,7 +18,7 @@ const Footer = () => {
             <div className="space-y-2 text-gray-300">
               <div className="flex items-center justify-center md:justify-start space-x-2">
                 <Mail className="h-4 w-4" />
-                <span className="text-sm">info@gekrafskampusjabar.my.id</span>
+                <span className="text-sm">gekrafskampusjabar@gmail.com</span>
               </div>
               <div className="flex items-center justify-center md:justify-start space-x-2">
                 <Phone className="h-4 w-4" />
@@ -26,7 +26,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center justify-center md:justify-start space-x-2">
                 <MapPin className="h-4 w-4" />
-                <span className="text-sm">Bandung, Jawa Barat</span>
+                <span className="text-sm">Kota Bandung Jawa Barat</span>
               </div>
             </div>
           </div>
@@ -56,9 +56,6 @@ const Footer = () => {
             <div className="space-y-2">
               <Link to="/ad-art" className="block text-gray-300 hover:text-white transition-colors text-sm">
                 AD/ART
-              </Link>
-              <Link to="/kepengurusan" className="block text-gray-300 hover:text-white transition-colors text-sm">
-                Kepengurusan
               </Link>
               <Link to="/contact" className="block text-gray-300 hover:text-white transition-colors text-sm">
                 Kontak
@@ -92,7 +89,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          © 2025 GEKRAFS Kampus Jawa Barat. Semua hak cipta dilindungi.
+          © 2025 GEKRAFS Kampus Jabar. Semua hak cipta dilindungi.
         </div>
       </div>
     </footer>

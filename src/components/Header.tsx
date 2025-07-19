@@ -37,12 +37,12 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-<Link to="/" className="flex items-center space-x-2">
-  <div className="p-2">
-    <img src="assets/img/gekrafslogo.png" alt="GEKRAFS Logo" className="h-8 w-8" />
-  </div>
-  <span className="font-bold text-xl text-gray-800 hidden sm:block">GEKRAFS Kampus Jabar</span>
-</Link>
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="p-2">
+              <img src="assets/img/gekrafslogo.png" alt="MUC Logo" className="h-8 w-8" />
+            </div>
+            <span className="font-bold text-base sm:text-xl text-gray-800">GEKRAFS Kampus Jawa Barat</span>
+            </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
@@ -66,7 +66,7 @@ const Header = () => {
                   <Link to="/kepengurusan">Kepengurusan</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/dewan-pembina">Dewan Pembina</Link>
+                  <Link to="/dewan-pembina">Dewan Pengarah</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -84,16 +84,17 @@ const Header = () => {
 
           {/* User Menu & Action Buttons */}
           <div className="flex items-center space-x-4">
-            {/* Ecommerce Button */}
-            <Link to="/ecommerce">
-              <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+            {/* Ecommerce Button (desktop only) */}
+            <Link to="/ecommerce" className="hidden lg:block">
+              <Button className="bg-green-600 to-green-500 hover:from-green-700 hover:to-yellow-900 text-white flex items-center space-x-2 transition-colors duration-300 ease-in-out">
                 <Store className="h-4 w-4" />
-                <span className="hidden sm:block">Ecommerce</span>
+                <span className="hidden sm:block">E-Commerce</span>
               </Button>
             </Link>
 
+            {/* User Menu (desktop only) */}
             {user ? (
-              <div className="flex items-center space-x-2">
+              <div className="hidden lg:flex items-center space-x-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex items-center space-x-2">
@@ -102,9 +103,21 @@ const Header = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-white">
-                    <DropdownMenuItem asChild>
-                      <Link to="/dashboard">Dashboard</Link>
-                    </DropdownMenuItem>
+                    {profile?.role === 'anggota_biasa' ? (
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard" onClick={() => {
+                          // Navigate to dashboard and set active section to orders for members
+                          setTimeout(() => {
+                            const event = new CustomEvent('setDashboardSection', { detail: 'orders' });
+                            window.dispatchEvent(event);
+                          }, 100);
+                        }}>Pesanan Saya</Link>
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard">Dashboard</Link>
+                      </DropdownMenuItem>
+                    )}
                     {(profile?.role === 'admin_artikel' || profile?.role === 'super_admin') && (
                       <DropdownMenuItem asChild>
                         <Link to="/dashboard" onClick={() => {
@@ -127,8 +140,8 @@ const Header = () => {
                 </DropdownMenu>
               </div>
             ) : (
-              <Link to="/signin">
-                <Button className="bg-gradient-to-r from-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700 flex items-center space-x-2">
+              <Link to="/signin" className="hidden lg:block">
+                <Button className="bg-sky-600 to-yellow-6000 hover:from-sky-700 hover:to-yellow-700 flex items-center space-x-2">
                   <User className="h-4 w-4" />
                   <span>Masuk</span>
                 </Button>
@@ -150,7 +163,7 @@ const Header = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="lg:hidden border-t bg-white">
-            <nav className="py-4 space-y-2">
+            <nav className="py-4 space-y-2 flex flex-col min-h-[60vh]">
               <Link
                 to="/"
                 className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors"
@@ -184,7 +197,7 @@ const Header = () => {
                 className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Dewan Pembina
+                Dewan Pengarah
               </Link>
               <Link
                 to="/program"
@@ -201,19 +214,37 @@ const Header = () => {
                 Artikel
               </Link>
               <Link
-                to="/ecommerce"
-                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Ecommerce
-              </Link>
-              <Link
                 to="/contact"
                 className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Kontak
               </Link>
+              <div className="flex-1" /> {/* Spacer untuk dorong tombol ke bawah */}
+              <Link
+                to="/ecommerce"
+                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors border-t"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="flex items-center"><Store className="h-4 w-4 mr-2" />E-Commerce</span>
+              </Link>
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors border-t"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="flex items-center"><User className="h-4 w-4 mr-2" />{profile?.full_name || user.email}</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/signin"
+                  className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors border-t"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="flex items-center"><User className="h-4 w-4 mr-2" />Masuk</span>
+                </Link>
+              )}
             </nav>
           </div>
         )}

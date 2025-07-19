@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -68,11 +67,10 @@ const Program = () => {
           <div className="container mx-auto px-4">
             <div className="text-center">
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
-                Program GEKRAFS
+                Program Unggulan
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Bergabunglah dengan program-program unggulan GEKRAFS untuk mengembangkan 
-                potensi diri dan membangun jaringan yang kuat
+              Pilihan program pelatihan yang disesuaikan dengan kebutuhan industri modern.
               </p>
             </div>
           </div>
@@ -101,8 +99,8 @@ const Program = () => {
                         alt={program.name}
                         className="w-full h-64 object-cover"
                       />
-                      <div className="absolute top-4 left-4 bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 rounded-full">
-                        <Badge className="bg-white text-gray-800 font-medium">
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-green-600 text-white font-bold px-4 py-2 rounded-full">
                           Tersedia
                         </Badge>
                       </div>
@@ -115,7 +113,7 @@ const Program = () => {
                     
                     <CardContent className="space-y-6">
                       {/* Program Details */}
-                      <div className="space-y-3 text-sm">
+                      <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
                         {program.duration && (
                           <div className="flex items-center space-x-2">
                             <Clock className="h-4 w-4 text-gray-500" />

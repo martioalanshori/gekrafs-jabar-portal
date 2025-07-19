@@ -262,7 +262,11 @@ const UserManagement = () => {
                       </TableCell>
                       <TableCell>{profile.campus || 'Tidak diset'}</TableCell>
                       <TableCell>
-                        {new Date(profile.created_at).toLocaleDateString('id-ID')}
+                        {new Date(profile.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">

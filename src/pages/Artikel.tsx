@@ -9,6 +9,10 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { generateSlugWithId } from "@/utils/slug";
+import { generateSocialPreviewUrl } from "@/utils/socialPreview";
+import DynamicMetaTags from "@/components/DynamicMetaTags";
+import { toast } from "@/hooks/use-toast";
 
 interface Article {
   id: string;
@@ -41,11 +45,14 @@ const Artikel = () => {
         .eq('published', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching articles:', error);
+        throw error;
+      }
+      
       setArticles(data || []);
     } catch (error) {
       console.error('Error fetching articles:', error);
-      // Fallback to dummy data if there's an error
       setArticles([]);
     } finally {
       setLoading(false);
@@ -81,14 +88,20 @@ const Artikel = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+      <DynamicMetaTags 
+        title="Artikel GEKRAFS Kampus Jawa Barat"
+        description="Informasi terbaru, berita, dan insight seputar kegiatan GEKRAFS Kampus Jawa Barat. Temukan artikel menarik tentang teknologi, kewirausahaan, event, dan banyak lagi."
+        image="/assets/img/gekrafslogo.png"
+        type="website"
+      />
       <Header />
       
       <div className="pt-16">
         <div className="container mx-auto px-4 py-20">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">Artikel GEKRAFS</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">Artikel GEKRAFS Kampus Jabar</h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Informasi terbaru, berita, dan insight seputar kegiatan GEKRAFS Jawa Barat
+              Informasi terbaru, berita, dan insight seputar kegiatan GEKRAFS Kampus Jabar
             </p>
           </div>
 
@@ -140,15 +153,40 @@ const Artikel = () => {
                 <CardContent>
                   <p className="text-gray-600 text-sm line-clamp-3 mb-4">{article.excerpt}</p>
                   <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-                    <span>{article.created_at ? new Date(article.created_at).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</span>
+                    <span>{article.created_at ? new Date(article.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    }) : 'Tanggal tidak tersedia'}</span>
                     <span>{article.views || 0} views</span>
                   </div>
-                  <Button 
-                    className="w-full"
-                    onClick={() => navigate(`/artikel/${article.id}`)}
-                  >
-                    Baca Selengkapnya
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      className="flex-1"
+                      onClick={() => navigate(`/artikel/${generateSlugWithId(article.title, article.id)}`)}
+                    >
+                      Baca Selengkapnya
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const socialUrl = generateSocialPreviewUrl(
+                          article.id,
+                          article.title,
+                          article.excerpt || article.content.substring(0, 160),
+                          article.image_url
+                        );
+                        navigator.clipboard.writeText(socialUrl);
+                        toast({
+                          title: "Link Artikel Disalin",
+                          description: "Link artikel dengan preview yang benar telah disalin ke clipboard. Gunakan link ini untuk share di social media.",
+                        });
+                      }}
+                    >
+                      📋 Share
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
